@@ -14,7 +14,7 @@
     <div class="hero-inner">
         <p class="eyebrow">International Federation of Robotics</p>
         <h1>Robotics Award Nomination</h1>
-        <p>Nominate an outstanding leader whose work has created lasting value for robotics, industry and society.</p>
+        <p>Nominate an outstanding solution that creates value for robotics, industry and society.</p>
     </div>
 </section>
 {% endblock %}
@@ -24,13 +24,13 @@
     <div class="intro-grid">
         <div>
             <p class="eyebrow">Nomination form</p>
-            <h2>Tell us about your candidate</h2>
-            <p>The form follows the structure of the Joseph F. Engelberger Robotics Award nomination process. Please review the relevant category criteria before submitting and provide specific, verifiable examples.</p>
+            <h2>Tell us about your solution</h2>
+            <p>Please provide details about your company and the solution you are nominating.</p>
             <p>No account or registration is required. Fields marked <span class="required">*</span> are required. Your draft is not saved until the form is submitted.</p>
         </div>
         <aside class="reference-note">
             <strong>Before you begin</strong>
-            <p>Prepare a concise career biography, evidence of robotics impact, details of service to the industry and one external reference.</p>
+            <p>Prepare the name and a brief description of your solution, your reasons for nominating it and any supporting documents.</p>
         </aside>
     </div>
 
@@ -55,37 +55,21 @@
     <form action="{{ site_url('/') }}" method="post" enctype="multipart/form-data">
         {{ csrf_field() }}
 
-        <section class="form-section" aria-labelledby="section-category">
+        <section class="form-section" aria-labelledby="section-nominee">
             <div class="section-heading">
                 <span class="section-number">01</span>
                 <div>
-                    <h2 id="section-category">Award category and nominee</h2>
-                    <p>Select the category and provide the candidate’s current professional information.</p>
+                    <h2 id="section-nominee">Company and contact</h2>
+                    <p>Provide your company and contact information.</p>
                 </div>
             </div>
 
-            <fieldset class="field">
-                <legend class="field-label">Award category <span class="required">*</span></legend>
-                <div class="choice-grid">
-                    <div class="choice">
-                        <input type="radio" id="category-application" name="category" value="application" required {% if values.category|default('') == 'application' %}checked{% endif %}>
-                        <label for="category-application">
-                            <strong>Application</strong>
-                            <span>For sustained achievement in applying robotics, opening new markets or delivering measurable commercial and societal impact.</span>
-                        </label>
-                    </div>
-                    <div class="choice">
-                        <input type="radio" id="category-leadership" name="category" value="leadership" required {% if values.category|default('') == 'leadership' %}checked{% endif %}>
-                        <label for="category-leadership">
-                            <strong>Leadership</strong>
-                            <span>For exceptional leadership, advocacy and service that has advanced robotics beyond the nominee’s own organization.</span>
-                        </label>
-                    </div>
-                </div>
-                {{ form.error(errors, 'category') }}
-            </fieldset>
-
             <div class="field-grid">
+                <div class="field full">
+                    <label for="nominee-organization">Company or organization <span class="required">*</span></label>
+                    <input class="{{ errors.nominee_organization is defined ? 'invalid' : '' }}" id="nominee-organization" name="nominee_organization" value="{{ values.nominee_organization|default('') }}" required autocomplete="organization">
+                    {{ form.error(errors, 'nominee_organization') }}
+                </div>
                 <div class="field">
                     <label for="nominee-first-name">First name <span class="required">*</span></label>
                     <input class="{{ errors.nominee_first_name is defined ? 'invalid' : '' }}" id="nominee-first-name" name="nominee_first_name" value="{{ values.nominee_first_name|default('') }}" required autocomplete="given-name">
@@ -102,9 +86,9 @@
                     {{ form.error(errors, 'nominee_title') }}
                 </div>
                 <div class="field">
-                    <label for="nominee-organization">Company or organization <span class="required">*</span></label>
-                    <input class="{{ errors.nominee_organization is defined ? 'invalid' : '' }}" id="nominee-organization" name="nominee_organization" value="{{ values.nominee_organization|default('') }}" required autocomplete="organization">
-                    {{ form.error(errors, 'nominee_organization') }}
+                    <label for="nominee-role">Role/function <span class="required">*</span></label>
+                    <input class="{{ errors.nominee_role is defined ? 'invalid' : '' }}" id="nominee-role" name="nominee_role" value="{{ values.nominee_role|default('') }}" required>
+                    {{ form.error(errors, 'nominee_role') }}
                 </div>
                 <div class="field">
                     <label for="nominee-email">Email</label>
@@ -129,118 +113,40 @@
                 <span class="section-number">02</span>
                 <div>
                     <h2 id="section-case">Case for nomination</h2>
-                    <p>Use concrete outcomes, dates and examples. Each response must contain at least 50 characters.</p>
+                    <p>Describe the nominated solution and why it should win.</p>
                 </div>
             </div>
 
             <div class="field">
-                <label for="nominee-biography">Career biography <span class="required">*</span></label>
-                <textarea class="{{ errors.nominee_biography is defined ? 'invalid' : '' }}" id="nominee-biography" name="nominee_biography" maxlength="5000" required>{{ values.nominee_biography|default('') }}</textarea>
-                <p class="field-hint">Summarize the nominee’s robotics career, key roles and years of involvement.</p>
-                {{ form.error(errors, 'nominee_biography') }}
+                <label for="solution-name">Name or title of the nominated solution <span class="required">*</span></label>
+                <input class="{{ errors.solution_name is defined ? 'invalid' : '' }}" id="solution-name" name="solution_name" value="{{ values.solution_name|default('') }}" maxlength="255" required>
+                <p class="field-hint">This name or title will be used throughout the process.</p>
+                {{ form.error(errors, 'solution_name') }}
             </div>
-
             <div class="field">
-                <label for="nominee-contribution">Why should this person receive the award? <span class="required">*</span></label>
-                <textarea class="{{ errors.nominee_contribution is defined ? 'invalid' : '' }}" id="nominee-contribution" name="nominee_contribution" maxlength="5000" required>{{ values.nominee_contribution|default('') }}</textarea>
-                <p class="field-hint">Describe the nominee’s most important contributions to robotics and their lasting significance.</p>
-                {{ form.error(errors, 'nominee_contribution') }}
+                <label for="solution-description">Description <span class="required">*</span></label>
+                <textarea class="{{ errors.solution_description is defined ? 'invalid' : '' }}" id="solution-description" name="solution_description" maxlength="300" required>{{ values.solution_description|default('') }}</textarea>
+                <p class="field-hint">Brief description of the nominated solution — 300 characters maximum.</p>
+                {{ form.error(errors, 'solution_description') }}
             </div>
-
             <div class="field">
-                <label for="nominee-industry-service">Leadership and service to the robotics industry <span class="required">*</span></label>
-                <textarea class="{{ errors.nominee_industry_service is defined ? 'invalid' : '' }}" id="nominee-industry-service" name="nominee_industry_service" maxlength="5000" required>{{ values.nominee_industry_service|default('') }}</textarea>
-                <p class="field-hint">Include service beyond the nominee’s normal role, such as mentoring, standards work, education or industry advocacy.</p>
-                {{ form.error(errors, 'nominee_industry_service') }}
-            </div>
-
-            <div class="field">
-                <label for="nominee-innovation">Innovation, applications and measurable impact <span class="required">*</span></label>
-                <textarea class="{{ errors.nominee_innovation is defined ? 'invalid' : '' }}" id="nominee-innovation" name="nominee_innovation" maxlength="5000" required>{{ values.nominee_innovation|default('') }}</textarea>
-                <p class="field-hint">Provide evidence such as successful applications, patents, products, market creation, safety gains or commercial impact.</p>
-                {{ form.error(errors, 'nominee_innovation') }}
+                <label for="solution-reason">Why we should win the award? <span class="required">*</span></label>
+                <textarea class="{{ errors.solution_reason is defined ? 'invalid' : '' }}" id="solution-reason" name="solution_reason" maxlength="300" required>{{ values.solution_reason|default('') }}</textarea>
+                <p class="field-hint">300 characters maximum.</p>
+                {{ form.error(errors, 'solution_reason') }}
             </div>
         </section>
 
-        <section class="form-section" aria-labelledby="section-reference">
+        <section class="form-section" aria-labelledby="section-documents">
             <div class="section-heading">
                 <span class="section-number">03</span>
                 <div>
-                    <h2 id="section-reference">External reference</h2>
-                    <p>Provide one person outside the nominee’s organization who can support the nomination.</p>
+                    <h2 id="section-documents">Documents and confirmations</h2>
+                    <p>Upload supporting documents and confirm the following statements.</p>
                 </div>
             </div>
 
             <div class="field-grid">
-                <div class="field">
-                    <label for="reference-name">Reference name <span class="required">*</span></label>
-                    <input class="{{ errors.reference_name is defined ? 'invalid' : '' }}" id="reference-name" name="reference_name" value="{{ values.reference_name|default('') }}" required>
-                    {{ form.error(errors, 'reference_name') }}
-                </div>
-                <div class="field">
-                    <label for="reference-organization">Organization <span class="required">*</span></label>
-                    <input class="{{ errors.reference_organization is defined ? 'invalid' : '' }}" id="reference-organization" name="reference_organization" value="{{ values.reference_organization|default('') }}" required>
-                    {{ form.error(errors, 'reference_organization') }}
-                </div>
-                <div class="field full">
-                    <label for="reference-email">Email <span class="required">*</span></label>
-                    <input class="{{ errors.reference_email is defined ? 'invalid' : '' }}" type="email" id="reference-email" name="reference_email" value="{{ values.reference_email|default('') }}" required>
-                    {{ form.error(errors, 'reference_email') }}
-                </div>
-            </div>
-        </section>
-
-        <section class="form-section" aria-labelledby="section-nominator">
-            <div class="section-heading">
-                <span class="section-number">04</span>
-                <div>
-                    <h2 id="section-nominator">Your information</h2>
-                    <p>We will use these details to confirm receipt and contact you with follow-up questions.</p>
-                </div>
-            </div>
-
-            <div class="field-grid">
-                <div class="field">
-                    <label for="nominator-first-name">First name <span class="required">*</span></label>
-                    <input class="{{ errors.nominator_first_name is defined ? 'invalid' : '' }}" id="nominator-first-name" name="nominator_first_name" value="{{ values.nominator_first_name|default('') }}" required autocomplete="given-name">
-                    {{ form.error(errors, 'nominator_first_name') }}
-                </div>
-                <div class="field">
-                    <label for="nominator-last-name">Last name <span class="required">*</span></label>
-                    <input class="{{ errors.nominator_last_name is defined ? 'invalid' : '' }}" id="nominator-last-name" name="nominator_last_name" value="{{ values.nominator_last_name|default('') }}" required autocomplete="family-name">
-                    {{ form.error(errors, 'nominator_last_name') }}
-                </div>
-                <div class="field">
-                    <label for="nominator-title">Title <span class="required">*</span></label>
-                    <input class="{{ errors.nominator_title is defined ? 'invalid' : '' }}" id="nominator-title" name="nominator_title" value="{{ values.nominator_title|default('') }}" required>
-                    {{ form.error(errors, 'nominator_title') }}
-                </div>
-                <div class="field">
-                    <label for="nominator-organization">Company or organization <span class="required">*</span></label>
-                    <input class="{{ errors.nominator_organization is defined ? 'invalid' : '' }}" id="nominator-organization" name="nominator_organization" value="{{ values.nominator_organization|default('') }}" required autocomplete="organization">
-                    {{ form.error(errors, 'nominator_organization') }}
-                </div>
-                <div class="field">
-                    <label for="nominator-email">Email <span class="required">*</span></label>
-                    <input class="{{ errors.nominator_email is defined ? 'invalid' : '' }}" type="email" id="nominator-email" name="nominator_email" value="{{ values.nominator_email|default('') }}" required autocomplete="email">
-                    {{ form.error(errors, 'nominator_email') }}
-                </div>
-                <div class="field">
-                    <label for="nominator-phone">Phone <span class="required">*</span></label>
-                    <input class="{{ errors.nominator_phone is defined ? 'invalid' : '' }}" type="tel" id="nominator-phone" name="nominator_phone" value="{{ values.nominator_phone|default('') }}" required autocomplete="tel">
-                    {{ form.error(errors, 'nominator_phone') }}
-                </div>
-                <div class="field full">
-                    <label for="relationship-to-nominee">Relationship to nominee <span class="required">*</span></label>
-                    <input class="{{ errors.relationship_to_nominee is defined ? 'invalid' : '' }}" id="relationship-to-nominee" name="relationship_to_nominee" value="{{ values.relationship_to_nominee|default('') }}" maxlength="500" required>
-                    {{ form.error(errors, 'relationship_to_nominee') }}
-                </div>
-                <div class="field full">
-                    <label for="supporting-links">Supporting links</label>
-                    <textarea class="{{ errors.supporting_links is defined ? 'invalid' : '' }}" id="supporting-links" name="supporting_links" maxlength="4000">{{ values.supporting_links|default('') }}</textarea>
-                    <p class="field-hint">Add one link per line to publications, patents, case studies, videos or other supporting evidence.</p>
-                    {{ form.error(errors, 'supporting_links') }}
-                </div>
                 <div class="field full">
                     <label for="documents">Supporting documents and videos</label>
                     <input class="{{ errors.documents is defined ? 'invalid' : '' }}" type="file" id="documents" name="documents[]" accept=".pdf,.doc,.docx,.odt,.mp4,.mov,.webm,.avi,.zip" multiple>
@@ -270,7 +176,7 @@
             </div>
 
             <div class="submit-row">
-                <p>Submitting this form stores the nomination securely and sends a confirmation to the nominator’s email address.</p>
+                <p>Submitting this form stores the nomination securely. If you provide an email address, we will send a confirmation to it.</p>
                 <button class="button" type="submit">Submit nomination</button>
             </div>
         </section>

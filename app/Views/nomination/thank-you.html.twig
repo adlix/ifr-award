@@ -21,8 +21,8 @@
             <p>Your submission reference is <strong>#{{ nominationId }}</strong>.</p>
         {% endif %}
         {% if mailSent %}
-            <p class="notice">A confirmation email has been sent to the nominator.</p>
-        {% else %}
+            <p class="notice">A confirmation email has been sent to the address provided.</p>
+        {% elseif mailSent is same as(false) %}
             <p class="notice error">The nomination was saved, but the confirmation email could not be sent.</p>
         {% endif %}
         <p>The IFR Awards team may contact you if additional information is required.</p>

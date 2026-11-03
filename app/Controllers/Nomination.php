@@ -17,29 +17,17 @@ class Nomination extends BaseController
      * @var array<string, array{label: string, rules: string}>
      */
     private const RULES = [
-        'category'                    => ['label' => 'Award category', 'rules' => 'required|in_list[application,leadership]'],
-        'nominee_first_name'          => ['label' => 'Nominee first name', 'rules' => 'required|max_length[100]'],
-        'nominee_last_name'           => ['label' => 'Nominee last name', 'rules' => 'required|max_length[100]'],
-        'nominee_title'               => ['label' => 'Nominee title', 'rules' => 'required|max_length[150]'],
-        'nominee_organization'        => ['label' => 'Nominee organization', 'rules' => 'required|max_length[180]'],
-        'nominee_email'               => ['label' => 'Nominee email', 'rules' => 'permit_empty|valid_email|max_length[254]'],
-        'nominee_phone'               => ['label' => 'Nominee phone', 'rules' => 'permit_empty|max_length[60]'],
-        'nominee_country'             => ['label' => 'Nominee country', 'rules' => 'required|max_length[100]'],
-        'nominee_biography'           => ['label' => 'Career biography', 'rules' => 'required|min_length[50]|max_length[5000]'],
-        'nominee_contribution'        => ['label' => 'Contribution to robotics', 'rules' => 'required|min_length[50]|max_length[5000]'],
-        'nominee_industry_service'    => ['label' => 'Service to the robotics industry', 'rules' => 'required|min_length[50]|max_length[5000]'],
-        'nominee_innovation'          => ['label' => 'Innovation and impact', 'rules' => 'required|min_length[50]|max_length[5000]'],
-        'reference_name'              => ['label' => 'Reference name', 'rules' => 'required|max_length[200]'],
-        'reference_organization'      => ['label' => 'Reference organization', 'rules' => 'required|max_length[180]'],
-        'reference_email'             => ['label' => 'Reference email', 'rules' => 'required|valid_email|max_length[254]'],
-        'nominator_first_name'        => ['label' => 'Nominator first name', 'rules' => 'required|max_length[100]'],
-        'nominator_last_name'         => ['label' => 'Nominator last name', 'rules' => 'required|max_length[100]'],
-        'nominator_title'             => ['label' => 'Nominator title', 'rules' => 'required|max_length[150]'],
-        'nominator_organization'      => ['label' => 'Nominator organization', 'rules' => 'required|max_length[180]'],
-        'nominator_email'             => ['label' => 'Nominator email', 'rules' => 'required|valid_email|max_length[254]'],
-        'nominator_phone'             => ['label' => 'Nominator phone', 'rules' => 'required|max_length[60]'],
-        'relationship_to_nominee'     => ['label' => 'Relationship to nominee', 'rules' => 'required|max_length[500]'],
-        'supporting_links'            => ['label' => 'Supporting links', 'rules' => 'permit_empty|max_length[4000]'],
+        'nominee_first_name'   => ['label' => 'First name', 'rules' => 'required|max_length[100]'],
+        'nominee_last_name'    => ['label' => 'Last name', 'rules' => 'required|max_length[100]'],
+        'nominee_title'        => ['label' => 'Current title', 'rules' => 'required|max_length[150]'],
+        'nominee_role'         => ['label' => 'Role/function', 'rules' => 'required|max_length[150]'],
+        'nominee_organization' => ['label' => 'Company or organization', 'rules' => 'required|max_length[180]'],
+        'nominee_email'        => ['label' => 'Email', 'rules' => 'permit_empty|valid_email|max_length[254]'],
+        'nominee_phone'        => ['label' => 'Phone', 'rules' => 'permit_empty|max_length[60]'],
+        'nominee_country'      => ['label' => 'Country', 'rules' => 'required|max_length[100]'],
+        'solution_name'        => ['label' => 'Name or title of the nominated solution', 'rules' => 'required|max_length[255]'],
+        'solution_description' => ['label' => 'Description', 'rules' => 'required|max_length[300]'],
+        'solution_reason'      => ['label' => 'Why we should win the award', 'rules' => 'required|max_length[300]'],
         'eligibility_confirmed'       => ['label' => 'Eligibility confirmation', 'rules' => 'required|in_list[1]'],
         'attendance_confirmed'        => ['label' => 'Attendance confirmation', 'rules' => 'required|in_list[1]'],
         'privacy_consent'             => ['label' => 'Privacy consent', 'rules' => 'required|in_list[1]'],
@@ -150,7 +138,7 @@ class Nomination extends BaseController
                 ->setBody($this->renderForm($values, ['documents' => 'The nomination could not be stored. Please try again.']));
         }
 
-        $mailSent = $this->sendConfirmation($values, (int) $nominationId);
+        $mailSent = ! empty($values['nominee_email']) ? $this->sendConfirmation($values, (int) $nominationId) : null;
 
         return redirect()
             ->to(site_url('thank-you'))
@@ -196,29 +184,9 @@ class Nomination extends BaseController
     private function nominationData(array $values, ?int $userId): array
     {
         $fields = [
-            'category',
-            'nominee_first_name',
-            'nominee_last_name',
-            'nominee_title',
-            'nominee_organization',
-            'nominee_email',
-            'nominee_phone',
-            'nominee_country',
-            'nominee_biography',
-            'nominee_contribution',
-            'nominee_industry_service',
-            'nominee_innovation',
-            'reference_name',
-            'reference_organization',
-            'reference_email',
-            'nominator_first_name',
-            'nominator_last_name',
-            'nominator_title',
-            'nominator_organization',
-            'nominator_email',
-            'nominator_phone',
-            'relationship_to_nominee',
-            'supporting_links',
+            'nominee_first_name', 'nominee_last_name', 'nominee_title', 'nominee_role',
+            'nominee_organization', 'nominee_email', 'nominee_phone', 'nominee_country',
+            'solution_name', 'solution_description', 'solution_reason',
         ];
 
         $data = ['user_id' => $userId];
@@ -317,13 +285,11 @@ class Nomination extends BaseController
         unset($document);
 
         $email = service('email');
-        $email->setTo((string) $values['nominator_email']);
+        $email->setTo((string) $values['nominee_email']);
         $email->setSubject('IFR Award nomination received');
         $email->setMessage(service('twig')->render('emails/nomination-confirmation.html.twig', [
             'nominationId' => $nominationId,
-            'nominator'    => trim($values['nominator_first_name'] . ' ' . $values['nominator_last_name']),
             'nominee'      => trim($values['nominee_first_name'] . ' ' . $values['nominee_last_name']),
-            'category'     => ucfirst((string) $values['category']),
             'data'         => $values,
             'documents'    => $documents,
         ]));

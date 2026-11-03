@@ -36,7 +36,7 @@ class Nominations extends BaseController
 
         if ($selectedPeriod !== null) {
             $nominations = $nominationModel
-                ->select('id, category, nominee_first_name, nominee_last_name, nominee_title, nominee_organization, nominee_country, nominator_first_name, nominator_last_name, created_at')
+                ->select('id, category, solution_name, nominee_first_name, nominee_last_name, nominee_title, nominee_organization, nominee_country, nominator_first_name, nominator_last_name, created_at')
                 ->where('created_at >=', $selectedPeriod . '-01-01 00:00:00')
                 ->where('created_at <', ($selectedPeriod + 1) . '-01-01 00:00:00')
                 ->orderBy('created_at', 'DESC')
@@ -44,7 +44,7 @@ class Nominations extends BaseController
 
             $documentCounts = $this->documentCounts(array_column($nominations, 'id'));
             foreach ($nominations as &$nomination) {
-                $nomination['category_label'] = $nomination['category'] === 'leadership' ? 'Leadership' : 'Application';
+                $nomination['category_label'] = $nomination['category'] ? ucfirst($nomination['category']) : null;
                 $nomination['document_count'] = $documentCounts[(int) $nomination['id']] ?? 0;
             }
             unset($nomination);
@@ -64,7 +64,7 @@ class Nominations extends BaseController
             throw PageNotFoundException::forPageNotFound();
         }
 
-        $nomination['category_label'] = $nomination['category'] === 'leadership' ? 'Leadership' : 'Application';
+        $nomination['category_label'] = $nomination['category'] ? ucfirst($nomination['category']) : null;
         $documents = (new NominationDocumentModel())
             ->where('nomination_id', $nominationId)
             ->orderBy('id', 'ASC')

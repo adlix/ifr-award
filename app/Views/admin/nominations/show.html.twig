@@ -5,8 +5,8 @@
 {% block hero %}
 <section class="hero hero-compact">
     <div class="hero-inner">
-        <p class="eyebrow">Nomination review · {{ nomination.category_label }}</p>
-        <h1>{{ nomination.nominee_first_name }} {{ nomination.nominee_last_name }}</h1>
+        <p class="eyebrow">Nomination review{% if nomination.category_label %} · {{ nomination.category_label }}{% endif %}</p>
+        <h1>{{ nomination.solution_name ?: (nomination.nominee_first_name ~ ' ' ~ nomination.nominee_last_name) }}</h1>
         <p>{{ nomination.nominee_title }} · {{ nomination.nominee_organization }} · Submitted {{ nomination.created_at|date('F j, Y') }}</p>
     </div>
 </section>
@@ -19,9 +19,11 @@
     <section class="detail-card detail-highlight">
         <div class="detail-heading">
             <p class="eyebrow">Nominee details</p>
-            <span class="category-badge">{{ nomination.category_label }}</span>
+            {% if nomination.category_label %}<span class="category-badge">{{ nomination.category_label }}</span>{% endif %}
         </div>
         <dl class="detail-grid">
+            <div><dt>Contact</dt><dd>{{ nomination.nominee_first_name }} {{ nomination.nominee_last_name }}</dd></div>
+            {% if nomination.nominee_role %}<div><dt>Role/function</dt><dd>{{ nomination.nominee_role }}</dd></div>{% endif %}
             <div><dt>Current title</dt><dd>{{ nomination.nominee_title }}</dd></div>
             <div><dt>Organization</dt><dd>{{ nomination.nominee_organization }}</dd></div>
             <div><dt>Country</dt><dd>{{ nomination.nominee_country }}</dd></div>
@@ -33,13 +35,20 @@
     <section class="detail-card">
         <p class="eyebrow">Case for nomination</p>
         <div class="narrative-stack">
+            {% if nomination.solution_name %}
+            <div><h2>Name or title of the nominated solution</h2><p>{{ nomination.solution_name }}</p></div>
+            <div><h2>Description</h2><p>{{ nomination.solution_description|e|nl2br }}</p></div>
+            <div><h2>Why we should win the award?</h2><p>{{ nomination.solution_reason|e|nl2br }}</p></div>
+            {% else %}
             <div><h2>Career biography</h2><p>{{ nomination.nominee_biography|e|nl2br }}</p></div>
             <div><h2>Why should this person receive the award?</h2><p>{{ nomination.nominee_contribution|e|nl2br }}</p></div>
             <div><h2>Leadership and service to the robotics industry</h2><p>{{ nomination.nominee_industry_service|e|nl2br }}</p></div>
             <div><h2>Innovation, applications and measurable impact</h2><p>{{ nomination.nominee_innovation|e|nl2br }}</p></div>
+            {% endif %}
         </div>
     </section>
 
+    {% if nomination.reference_name or nomination.nominator_first_name %}
     <div class="detail-columns">
         <section class="detail-card">
             <p class="eyebrow">External reference</p>
@@ -61,6 +70,8 @@
             </dl>
         </section>
     </div>
+
+    {% endif %}
 
     {% if nomination.supporting_links %}
         <section class="detail-card">
