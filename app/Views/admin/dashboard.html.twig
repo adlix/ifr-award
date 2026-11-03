@@ -1,0 +1,71 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Admin Dashboard · IFR Robotics Awards{% endblock %}
+
+{% block hero %}
+<section class="hero hero-compact">
+    <div class="hero-inner">
+        <p class="eyebrow">Administration</p>
+        <h1>Nomination dashboard</h1>
+        <p>Monitor current submissions and manage when nominations are accepted.</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="content-shell">
+    {% if success %}<p class="notice">{{ success }}</p>{% endif %}
+
+    <div class="dashboard-grid">
+        <section class="stat-card">
+            <span class="stat-label">Current period</span>
+            <strong class="stat-number">{{ currentCount }}</strong>
+            <span>Nominations from {{ settings.starts_on|date('M j, Y') }} to {{ settings.ends_on|date('M j, Y') }}</span>
+        </section>
+        <section class="stat-card">
+            <span class="stat-label">All submissions</span>
+            <strong class="stat-number">{{ totalCount }}</strong>
+            <span>Total nominations stored</span>
+        </section>
+        <section class="stat-card">
+            <span class="stat-label">Submission status</span>
+            <strong class="status-badge {{ periodOpen ? 'open' : 'closed' }}">{{ periodOpen ? 'Open' : 'Closed' }}</strong>
+            <span>{{ periodOpen ? 'Public submissions are currently accepted.' : 'Public submissions are currently blocked.' }}</span>
+        </section>
+    </div>
+
+    <section class="card admin-panel">
+        <p class="eyebrow">Nomination period</p>
+        <h2>Manage submission dates</h2>
+        <p>The start and end dates are inclusive. Outside this period the public form remains visible with a closed notice, but cannot be submitted.</p>
+
+        {% if errors %}
+            <div class="form-errors" role="alert">
+                <ul>
+                    {% for error in errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <form action="{{ site_url('admin/nomination-period') }}" method="post">
+            {{ csrf_field() }}
+            <div class="field-grid">
+                <div class="field">
+                    <label for="starts-on">Start date <span class="required">*</span></label>
+                    <input class="{{ errors.starts_on is defined ? 'invalid' : '' }}" type="date" id="starts-on" name="starts_on" value="{{ values.starts_on }}" required>
+                    {% if errors.starts_on is defined %}<p class="field-error">{{ errors.starts_on }}</p>{% endif %}
+                </div>
+                <div class="field">
+                    <label for="ends-on">End date <span class="required">*</span></label>
+                    <input class="{{ errors.ends_on is defined ? 'invalid' : '' }}" type="date" id="ends-on" name="ends_on" value="{{ values.ends_on }}" required>
+                    {% if errors.ends_on is defined %}<p class="field-error">{{ errors.ends_on }}</p>{% endif %}
+                </div>
+            </div>
+            <div class="submit-row">
+                <p>Changes take effect immediately for the public nomination form.</p>
+                <button class="button" type="submit">Save nomination period</button>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}

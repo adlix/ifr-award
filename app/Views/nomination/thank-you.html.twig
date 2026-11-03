@@ -1,0 +1,32 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Nomination received{% endblock %}
+
+{% block hero %}
+<section class="hero">
+    <div class="hero-inner">
+        <p class="eyebrow">International Federation of Robotics</p>
+        <h1>Thank you for your nomination</h1>
+        <p>Your submission has been stored and is ready for review.</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="content-shell">
+    <section class="card">
+        <p class="eyebrow">Submission complete</p>
+        <h1>Nomination received</h1>
+        {% if nominationId %}
+            <p>Your submission reference is <strong>#{{ nominationId }}</strong>.</p>
+        {% endif %}
+        {% if mailSent %}
+            <p class="notice">A confirmation email has been sent to the nominator.</p>
+        {% else %}
+            <p class="notice error">The nomination was saved, but the confirmation email could not be sent.</p>
+        {% endif %}
+        <p>The IFR Awards team may contact you if additional information is required.</p>
+        <a class="button secondary" href="{{ site_url('/') }}">Return to homepage</a>
+    </section>
+</div>
+{% endblock %}

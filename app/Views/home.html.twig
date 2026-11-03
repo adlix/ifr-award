@@ -1,0 +1,29 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}IFR Robotics Awards{% endblock %}
+
+{% block hero %}
+<section class="hero">
+    <div class="hero-inner">
+        <p class="eyebrow">International Federation of Robotics</p>
+        <h1>Recognizing excellence in robotics</h1>
+        <p>Celebrate the people whose leadership, innovation and applications are shaping the future of robotics worldwide.</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="content-shell">
+    <section class="card">
+        <p class="eyebrow">IFR Robotics Awards</p>
+        <h1>Nominate an outstanding candidate</h1>
+        <p>Submit a detailed nomination in the Application or Leadership category. You will need an account so that your submission can be securely associated with you.</p>
+        {% if loggedIn %}
+            <a class="button" href="{{ site_url('nominate') }}">Start nomination</a>
+        {% else %}
+            <a class="button" href="{{ site_url('login') }}">Login to nominate</a>
+            <a class="button secondary" href="{{ site_url('register') }}">Create account</a>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

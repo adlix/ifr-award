@@ -1,0 +1,93 @@
+{% macro row(label, value) %}
+<tr>
+    <td style="width:36%;padding:8px 12px;border-bottom:1px solid #dbe5e9;color:#647985;font-size:13px;vertical-align:top;">{{ label }}</td>
+    <td style="padding:8px 12px;border-bottom:1px solid #dbe5e9;color:#243c47;font-size:14px;vertical-align:top;">{% if value is not empty %}{{ value }}{% else %}—{% endif %}</td>
+</tr>
+{% endmacro %}
+
+{% macro text_block(label, value) %}
+<h3 style="margin:22px 0 6px;color:#00354b;font-size:15px;">{{ label }}</h3>
+<div style="padding:12px;background:#f3f7f9;color:#243c47;font-size:14px;line-height:1.5;white-space:pre-wrap;">{{ value }}</div>
+{% endmacro %}
+
+{% import _self as mail %}
+
+<!doctype html>
+<html lang="en">
+<body style="margin:0;background:#f4f7f8;color:#00354b;font-family:Arial,sans-serif;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+    <tr>
+        <td style="padding:32px 16px;">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:720px;margin:0 auto;background:#fff;border-top:6px solid #00b0f5;">
+                <tr>
+                    <td style="padding:32px;">
+                        <p style="margin:0 0 24px;color:#00b0f5;font-size:30px;font-weight:bold;">IFR</p>
+                        <h1 style="margin:0 0 16px;font-size:24px;">Nomination received</h1>
+                        <p>Hello {{ nominator }},</p>
+                        <p>Thank you for nominating <strong>{{ nominee }}</strong> in the <strong>{{ category }}</strong> category.</p>
+                        <p>Your submission reference is <strong>#{{ nominationId }}</strong>. Below is a copy of the information you submitted.</p>
+
+                        <h2 style="margin:30px 0 10px;color:#00354b;font-size:19px;">Award and nominee</h2>
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #dbe5e9;">
+                            {{ mail.row('Category', category) }}
+                            {{ mail.row('Nominee', nominee) }}
+                            {{ mail.row('Current title', data.nominee_title) }}
+                            {{ mail.row('Organization', data.nominee_organization) }}
+                            {{ mail.row('Email', data.nominee_email) }}
+                            {{ mail.row('Phone', data.nominee_phone) }}
+                            {{ mail.row('Country', data.nominee_country) }}
+                        </table>
+
+                        <h2 style="margin:30px 0 10px;color:#00354b;font-size:19px;">Case for nomination</h2>
+                        {{ mail.text_block('Career biography', data.nominee_biography) }}
+                        {{ mail.text_block('Contribution to robotics', data.nominee_contribution) }}
+                        {{ mail.text_block('Service to the robotics industry', data.nominee_industry_service) }}
+                        {{ mail.text_block('Innovation and impact', data.nominee_innovation) }}
+
+                        <h2 style="margin:30px 0 10px;color:#00354b;font-size:19px;">External reference</h2>
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #dbe5e9;">
+                            {{ mail.row('Name', data.reference_name) }}
+                            {{ mail.row('Organization', data.reference_organization) }}
+                            {{ mail.row('Email', data.reference_email) }}
+                        </table>
+
+                        <h2 style="margin:30px 0 10px;color:#00354b;font-size:19px;">Your submitted details</h2>
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #dbe5e9;">
+                            {{ mail.row('Name', nominator) }}
+                            {{ mail.row('Title', data.nominator_title) }}
+                            {{ mail.row('Organization', data.nominator_organization) }}
+                            {{ mail.row('Email', data.nominator_email) }}
+                            {{ mail.row('Phone', data.nominator_phone) }}
+                            {{ mail.row('Relationship to nominee', data.relationship_to_nominee) }}
+                        </table>
+
+                        <h3 style="margin:22px 0 6px;color:#00354b;font-size:15px;">Supporting links</h3>
+                        <div style="padding:12px;background:#f3f7f9;color:#243c47;font-size:14px;line-height:1.5;white-space:pre-wrap;">{% if data.supporting_links is not empty %}{{ data.supporting_links }}{% else %}No supporting links submitted.{% endif %}</div>
+
+                        <h2 style="margin:30px 0 10px;color:#00354b;font-size:19px;">Attached files</h2>
+                        {% if documents %}
+                            <ul style="margin:0;padding:0 0 0 20px;color:#243c47;font-size:14px;line-height:1.7;">
+                                {% for document in documents %}
+                                    <li><strong>{{ document.original_name }}</strong> — {{ document.mime_type }}, {{ document.size_label }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p style="margin:0;color:#647985;">No files attached.</p>
+                        {% endif %}
+
+                        <h2 style="margin:30px 0 10px;color:#00354b;font-size:19px;">Confirmations</h2>
+                        <ul style="margin:0;padding:0 0 0 20px;color:#243c47;font-size:14px;line-height:1.7;">
+                            <li>Eligibility criteria confirmed</li>
+                            <li>Award ceremony attendance confirmed</li>
+                            <li>Accuracy and privacy consent confirmed</li>
+                        </ul>
+
+                        <p style="margin:30px 0 0;">The IFR Awards team will contact you if further information is required.</p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

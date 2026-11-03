@@ -1,0 +1,50 @@
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "${APP_PORT:-8081}:80"
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - .:/var/www/html
+      - vendor:/var/www/html/vendor
+      - writable:/var/www/html/writable
+    networks:
+      - internal
+      - proxy
+      
+  database:
+    image: mariadb:11.4
+    environment:
+      MARIADB_DATABASE: "${DB_DATABASE:-app}"
+      MARIADB_USER: "${DB_USERNAME:-app}"
+      MARIADB_PASSWORD: "${DB_PASSWORD:-app}"
+      MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:-root}"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - database:/var/lib/mysql
+    networks:
+      - internal
+
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports:
+      - "${MAILPIT_PORT:-8025}:8025"
+
+volumes:
+  database:
+  vendor:
+  writable:
+
+networks:  
+  internal:
+    driver: bridge
+  proxy:
+    external: true
+    name: proxy

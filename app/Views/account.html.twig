@@ -1,0 +1,33 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Account · IFR Robotics Awards{% endblock %}
+
+{% block hero %}
+<section class="hero">
+    <div class="hero-inner">
+        <p class="eyebrow">Account</p>
+        <h1>Welcome, {{ username }}</h1>
+        <p>You are signed in as {{ email }}.</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="content-shell">
+    <section class="card">
+        <h2>Your award nominations</h2>
+        <p>Use your account to submit a candidate for an IFR Robotics Award.</p>
+        <a class="button" href="{{ site_url('/') }}">Start nomination</a>
+
+        {% if success %}<p class="notice">{{ success }}</p>{% endif %}
+        {% if error %}<p class="notice error">{{ error }}</p>{% endif %}
+
+        <h2>SMTP test</h2>
+        <p>Send a test email to your account address. In local development it appears in Mailpit.</p>
+        <form action="{{ site_url('account/test-email') }}" method="post">
+            {{ csrf_field() }}
+            <button class="button secondary" type="submit">Send test email</button>
+        </form>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#00b0f5">
+    <title>{% block title %}IFR Robotics Awards{% endblock %}</title>
+    <link rel="stylesheet" href="{{ site_url('assets/css/app.css') }}">
+</head>
+<body>
+<nav class="site-nav" aria-label="Main navigation">
+    <div class="nav-shell">
+        <a class="brand" href="{{ site_url('/') }}" aria-label="IFR Awards home">IFR</a>
+        <div class="nav-primary">
+            <details class="nav-dropdown">
+                <summary>Association</summary>
+                <div class="dropdown-panel">
+                    <a href="https://ifr.org/association">About IFR</a>
+                    <a href="https://ifr.org/executive-board">Key People</a>
+                    <a href="https://ifr.org/international-symposium-of-robotics">International Symposium on Robotics</a>
+                    <a href="https://ifr.org/events/iera-award/">IERA Award</a>
+                </div>
+            </details>
+            <details class="nav-dropdown">
+                <summary>Statistics</summary>
+                <div class="dropdown-panel">
+                    <a href="https://ifr.org/about-world-robotics/">About World Robotics</a>
+                    <a href="https://ifr.org/wr-industrial-robots/">Industrial Robots</a>
+                    <a href="https://ifr.org/wr-service-robots/">Service Robots</a>
+                </div>
+            </details>
+            <details class="nav-dropdown">
+                <summary>Newsroom</summary>
+                <div class="dropdown-panel">
+                    <a href="https://ifr.org/ifr-press-releases/">Press Releases</a>
+                    <a href="https://ifr.org/blog">Blog</a>
+                    <a href="https://ifr.org/case-studies">Case Studies</a>
+                </div>
+            </details>
+            <details class="nav-dropdown">
+                <summary>Resources</summary>
+                <div class="dropdown-panel">
+                    <a href="https://ifr.org/papers">Position Papers</a>
+                    <a href="https://ifr.org/sustainability">Sustainability</a>
+                    <a href="https://ifr.org/robot-history">Robot History</a>
+                </div>
+            </details>
+        </div>
+        <div class="nav-actions">
+            {% if loggedIn %}
+                {% if isAdmin %}<a class="nav-link" href="{{ site_url('admin') }}">Dashboard</a>{% endif %}
+                {% if isReviewer %}<a class="nav-link review-link" href="{{ site_url('admin/nominations') }}">Review nominations</a>{% endif %}
+                <a class="nav-link" href="{{ site_url('account') }}">{{ currentUsername|default('Account') }}</a>
+                <a class="nav-link primary" href="{{ site_url('/') }}">Nominate</a>
+            {% else %}
+                <a class="nav-link" href="{{ site_url('login') }}">Login</a>
+                <a class="nav-link primary" href="{{ site_url('/') }}">Nominate</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+{% block hero %}{% endblock %}
+
+<main class="page-main">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+    <div class="footer-shell">
+        <div>
+            <strong>International Federation of Robotics</strong><br>
+            Robotics industry information and professional recognition.
+        </div>
+        <div class="footer-links">
+            <a href="https://ifr.org/#contact">Contact</a>
+            <a href="https://ifr.org/privacy-policy">Privacy Policy</a>
+            {% if loggedIn %}<a href="{{ site_url('logout') }}">Logout</a>{% endif %}
+        </div>
+    </div>
+</footer>
+</body>
+</html>

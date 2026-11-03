@@ -1,0 +1,98 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{ nomination.nominee_first_name }} {{ nomination.nominee_last_name }} · Nomination review{% endblock %}
+
+{% block hero %}
+<section class="hero hero-compact">
+    <div class="hero-inner">
+        <p class="eyebrow">Nomination review · {{ nomination.category_label }}</p>
+        <h1>{{ nomination.nominee_first_name }} {{ nomination.nominee_last_name }}</h1>
+        <p>{{ nomination.nominee_title }} · {{ nomination.nominee_organization }} · Submitted {{ nomination.created_at|date('F j, Y') }}</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="content-shell detail-shell">
+    <a class="back-link" href="{{ site_url('admin/nominations?period=' ~ nomination.created_at|date('Y')) }}">← Back to nominations</a>
+
+    <section class="detail-card detail-highlight">
+        <div class="detail-heading">
+            <p class="eyebrow">Nominee details</p>
+            <span class="category-badge">{{ nomination.category_label }}</span>
+        </div>
+        <dl class="detail-grid">
+            <div><dt>Current title</dt><dd>{{ nomination.nominee_title }}</dd></div>
+            <div><dt>Organization</dt><dd>{{ nomination.nominee_organization }}</dd></div>
+            <div><dt>Country</dt><dd>{{ nomination.nominee_country }}</dd></div>
+            <div><dt>Email</dt><dd>{% if nomination.nominee_email %}<a href="mailto:{{ nomination.nominee_email }}">{{ nomination.nominee_email }}</a>{% else %}Not provided{% endif %}</dd></div>
+            <div><dt>Phone</dt><dd>{{ nomination.nominee_phone ?: 'Not provided' }}</dd></div>
+        </dl>
+    </section>
+
+    <section class="detail-card">
+        <p class="eyebrow">Case for nomination</p>
+        <div class="narrative-stack">
+            <div><h2>Career biography</h2><p>{{ nomination.nominee_biography|e|nl2br }}</p></div>
+            <div><h2>Why should this person receive the award?</h2><p>{{ nomination.nominee_contribution|e|nl2br }}</p></div>
+            <div><h2>Leadership and service to the robotics industry</h2><p>{{ nomination.nominee_industry_service|e|nl2br }}</p></div>
+            <div><h2>Innovation, applications and measurable impact</h2><p>{{ nomination.nominee_innovation|e|nl2br }}</p></div>
+        </div>
+    </section>
+
+    <div class="detail-columns">
+        <section class="detail-card">
+            <p class="eyebrow">External reference</p>
+            <dl class="detail-list">
+                <div><dt>Name</dt><dd>{{ nomination.reference_name }}</dd></div>
+                <div><dt>Organization</dt><dd>{{ nomination.reference_organization }}</dd></div>
+                <div><dt>Email</dt><dd><a href="mailto:{{ nomination.reference_email }}">{{ nomination.reference_email }}</a></dd></div>
+            </dl>
+        </section>
+        <section class="detail-card">
+            <p class="eyebrow">Nominator</p>
+            <dl class="detail-list">
+                <div><dt>Name</dt><dd>{{ nomination.nominator_first_name }} {{ nomination.nominator_last_name }}</dd></div>
+                <div><dt>Title</dt><dd>{{ nomination.nominator_title }}</dd></div>
+                <div><dt>Organization</dt><dd>{{ nomination.nominator_organization }}</dd></div>
+                <div><dt>Email</dt><dd><a href="mailto:{{ nomination.nominator_email }}">{{ nomination.nominator_email }}</a></dd></div>
+                <div><dt>Phone</dt><dd>{{ nomination.nominator_phone }}</dd></div>
+                <div><dt>Relationship</dt><dd>{{ nomination.relationship_to_nominee }}</dd></div>
+            </dl>
+        </section>
+    </div>
+
+    {% if nomination.supporting_links %}
+        <section class="detail-card">
+            <p class="eyebrow">Supporting links</p>
+            <p class="supporting-links">{{ nomination.supporting_links|e|nl2br }}</p>
+        </section>
+    {% endif %}
+
+    <section class="detail-card">
+        <p class="eyebrow">Submission confirmation</p>
+        <dl class="detail-list confirmation-list">
+            <div><dt>Eligibility reviewed</dt><dd>{{ nomination.eligibility_confirmed ? 'Confirmed' : 'Not confirmed' }}</dd></div>
+            <div><dt>Ceremony attendance</dt><dd>{{ nomination.attendance_confirmed ? 'Confirmed' : 'Not confirmed' }}</dd></div>
+            <div><dt>Privacy consent</dt><dd>{{ nomination.privacy_consent ? 'Confirmed' : 'Not confirmed' }}</dd></div>
+        </dl>
+    </section>
+
+    <section class="detail-card document-card">
+        <p class="eyebrow">Supporting documents</p>
+        <h2>Downloads</h2>
+        {% if documents %}
+            <ul class="document-list">
+                {% for document in documents %}
+                    <li>
+                        <div><strong>{{ document.original_name }}</strong><span>{{ document.mime_type }} · {{ document.size_label }}</span></div>
+                        <a class="button secondary" href="{{ site_url('admin/nominations/' ~ nomination.id ~ '/documents/' ~ document.id) }}">Download</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No supporting documents were uploaded with this nomination.</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}
