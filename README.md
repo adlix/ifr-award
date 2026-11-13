@@ -25,6 +25,19 @@ Beim ersten Start werden die Datenbankmigrationen automatisch ausgeführt.
 Registrierung und Anmeldung sind über `/register` und `/login` erreichbar.
 Nach der Anmeldung kann unter `/account` eine SMTP-Testmail versendet werden.
 
+### Admin anlegen
+
+Nach den Migrationen legt dieses SQL-Skript `matthias.zillig@adlix.de` als aktiven
+Benutzer mit der Rolle `admin` an:
+
+```bash
+docker compose exec -T database sh -c 'exec mariadb -u"$MARIADB_USER" -p"$MARIADB_PASSWORD" "$MARIADB_DATABASE"' < scripts/create-admin.sql
+```
+
+Bei einem vorhandenen Konto bleibt das Passwort erhalten. Wiederholte Aufrufe
+erzeugen keine zusätzlichen Konten oder Admin-Zuordnungen. Das initiale Passwort
+wird separat mitgeteilt; im Skript steht nur dessen Hash.
+
 SMTP-Zugangsdaten und Ports werden in `.env` konfiguriert. Der Host-Port ist standardmäßig 8082 (`APP_PORT`); innerhalb des Docker-Netzwerks ist die Anwendung unter `app:80` erreichbar.
 
 ```bash
