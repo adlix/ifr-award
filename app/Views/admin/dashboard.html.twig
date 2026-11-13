@@ -35,8 +35,8 @@
     </div>
 
     <section class="card admin-panel">
-        <p class="eyebrow">Nomination period</p>
-        <h2>Manage submission dates</h2>
+        <p class="eyebrow">Application form settings</p>
+        <h2>Manage submission dates and attendance confirmation</h2>
         <p>The start and end dates are inclusive. Outside this period the public form remains visible with a closed notice, but cannot be submitted.</p>
 
         {% if errors %}
@@ -61,9 +61,15 @@
                     {% if errors.ends_on is defined %}<p class="field-error">{{ errors.ends_on }}</p>{% endif %}
                 </div>
             </div>
+            <div class="field">
+                <label for="attendance-confirmation-text">Attendance confirmation text <span class="required">*</span></label>
+                <textarea class="{{ errors.attendance_confirmation_text is defined ? 'invalid' : '' }}" id="attendance-confirmation-text" name="attendance_confirmation_text" maxlength="2000" required aria-describedby="attendance-confirmation-hint">{{ values.attendance_confirmation_text }}</textarea>
+                <p class="field-hint" id="attendance-confirmation-hint">Enter the complete text for the attendance checkbox, including the award session and ceremony dates. This text also appears in the confirmation email. Maximum 2000 characters.</p>
+                {% if errors.attendance_confirmation_text is defined %}<p class="field-error">{{ errors.attendance_confirmation_text }}</p>{% endif %}
+            </div>
             <div class="submit-row">
                 <p>Changes take effect immediately for the public nomination form.</p>
-                <button class="button" type="submit">Save nomination period</button>
+                <button class="button" type="submit">Save form settings</button>
             </div>
         </form>
     </section>

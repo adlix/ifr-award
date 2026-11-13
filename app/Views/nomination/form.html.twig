@@ -7,14 +7,14 @@
     {% endif %}
 {% endmacro %}
 
-{% block title %}IFR Robotics Award Nomination{% endblock %}
+{% block title %}IFR Robotics Award Application{% endblock %}
 
 {% block hero %}
 <section class="hero">
     <div class="hero-inner">
         <p class="eyebrow">International Federation of Robotics</p>
-        <h1>Robotics Award Nomination</h1>
-        <p>Nominate an outstanding solution that creates value for robotics, industry and society.</p>
+        <h1>Robotics Award Application</h1>
+        <p>Apply with an outstanding solution that creates value for robotics, industry and society.</p>
     </div>
 </section>
 {% endblock %}
@@ -23,14 +23,14 @@
 <div class="content-shell">
     <div class="intro-grid">
         <div>
-            <p class="eyebrow">Nomination form</p>
+            <p class="eyebrow">Application form</p>
             <h2>Tell us about your solution</h2>
-            <p>Please provide details about your company and the solution you are nominating.</p>
+            <p>Please provide details about your company and the solution you are submitting.</p>
             <p>No account or registration is required. Fields marked <span class="required">*</span> are required. Your draft is not saved until the form is submitted.</p>
         </div>
         <aside class="reference-note">
             <strong>Before you begin</strong>
-            <p>Prepare the name and a brief description of your solution, your reasons for nominating it and any supporting documents.</p>
+            <p>Prepare the name and a brief description of your solution, your reasons for nominating it (please use provided form) and any supporting documents.</p>
         </aside>
     </div>
 
@@ -47,9 +47,9 @@
 
     {% if not nominationsOpen %}
         <section class="form-section nomination-closed" role="status">
-            <p class="eyebrow">Nominations closed</p>
-            <h2>The nomination form is currently unavailable</h2>
-            <p>Nominations may be submitted from {{ period.starts_on|date('F j, Y') }} through {{ period.ends_on|date('F j, Y') }}.</p>
+            <p class="eyebrow">Applications closed</p>
+            <h2>The application form is currently unavailable</h2>
+            <p>Applications may be submitted from {{ period.starts_on|date('F j, Y') }} through {{ period.ends_on|date('F j, Y') }}.</p>
         </section>
     {% else %}
     <form action="{{ site_url('/') }}" method="post" enctype="multipart/form-data">
@@ -80,19 +80,14 @@
                     <input class="{{ errors.nominee_last_name is defined ? 'invalid' : '' }}" id="nominee-last-name" name="nominee_last_name" value="{{ values.nominee_last_name|default('') }}" required autocomplete="family-name">
                     {{ form.error(errors, 'nominee_last_name') }}
                 </div>
-                <div class="field">
-                    <label for="nominee-title">Current title <span class="required">*</span></label>
-                    <input class="{{ errors.nominee_title is defined ? 'invalid' : '' }}" id="nominee-title" name="nominee_title" value="{{ values.nominee_title|default('') }}" required>
-                    {{ form.error(errors, 'nominee_title') }}
-                </div>
-                <div class="field">
+                <div class="field full">
                     <label for="nominee-role">Role/function <span class="required">*</span></label>
                     <input class="{{ errors.nominee_role is defined ? 'invalid' : '' }}" id="nominee-role" name="nominee_role" value="{{ values.nominee_role|default('') }}" required>
                     {{ form.error(errors, 'nominee_role') }}
                 </div>
                 <div class="field">
-                    <label for="nominee-email">Email</label>
-                    <input class="{{ errors.nominee_email is defined ? 'invalid' : '' }}" type="email" id="nominee-email" name="nominee_email" value="{{ values.nominee_email|default('') }}" autocomplete="email">
+                    <label for="nominee-email">Email <span class="required">*</span></label>
+                    <input class="{{ errors.nominee_email is defined ? 'invalid' : '' }}" type="email" id="nominee-email" name="nominee_email" value="{{ values.nominee_email|default('') }}" required autocomplete="email">
                     {{ form.error(errors, 'nominee_email') }}
                 </div>
                 <div class="field">
@@ -112,13 +107,13 @@
             <div class="section-heading">
                 <span class="section-number">02</span>
                 <div>
-                    <h2 id="section-case">Case for nomination</h2>
-                    <p>Describe the nominated solution and why it should win.</p>
+                    <h2 id="section-case">Case for application</h2>
+                    <p>Describe the submitted solution and why it should win.</p>
                 </div>
             </div>
 
             <div class="field">
-                <label for="solution-name">Name or title of the nominated solution <span class="required">*</span></label>
+                <label for="solution-name">Name or title of the submitted solution <span class="required">*</span></label>
                 <input class="{{ errors.solution_name is defined ? 'invalid' : '' }}" id="solution-name" name="solution_name" value="{{ values.solution_name|default('') }}" maxlength="255" required>
                 <p class="field-hint">This name or title will be used throughout the process.</p>
                 {{ form.error(errors, 'solution_name') }}
@@ -126,7 +121,7 @@
             <div class="field">
                 <label for="solution-description">Description <span class="required">*</span></label>
                 <textarea class="{{ errors.solution_description is defined ? 'invalid' : '' }}" id="solution-description" name="solution_description" maxlength="300" required>{{ values.solution_description|default('') }}</textarea>
-                <p class="field-hint">Brief description of the nominated solution — 300 characters maximum.</p>
+                <p class="field-hint">Brief description of the submitted solution — 300 characters maximum.</p>
                 {{ form.error(errors, 'solution_description') }}
             </div>
             <div class="field">
@@ -150,7 +145,7 @@
                 <div class="field full">
                     <label for="documents">Supporting documents and videos</label>
                     <input class="{{ errors.documents is defined ? 'invalid' : '' }}" type="file" id="documents" name="documents[]" accept=".pdf,.doc,.docx,.odt,.mp4,.mov,.webm,.avi,.zip" multiple>
-                    <p class="field-hint">Upload up to 3 PDF, DOC, DOCX, ODT, MP4, MOV, WebM, AVI or ZIP files. Maximum size: 20 MB per file.</p>
+                    <p class="field-hint">Upload up to 3 PDF, DOC, DOCX, ODT, MP4, MOV, WebM, AVI or ZIP files. Maximum size: 200 MB per file.</p>
                     {{ form.error(errors, 'documents') }}
                 </div>
             </div>
@@ -158,26 +153,26 @@
             <div class="check-list">
                 <label class="check-field">
                     <input type="checkbox" name="eligibility_confirmed" value="1" required {% if values.eligibility_confirmed|default(false) %}checked{% endif %}>
-                    <span>I have reviewed the relevant award criteria and confirm that the nominee is eligible. <span class="required">*</span></span>
+                    <span>I have reviewed the relevant award criteria and confirm that the applicant is eligible. <span class="required">*</span></span>
                 </label>
                 {{ form.error(errors, 'eligibility_confirmed') }}
 
                 <label class="check-field">
                     <input type="checkbox" name="attendance_confirmed" value="1" required {% if values.attendance_confirmed|default(false) %}checked{% endif %}>
-                    <span>The nominee can attend the award ceremony and participate in related interviews if selected. <span class="required">*</span></span>
+                    <span>{{ period.attendance_confirmation_text }} <span class="required">*</span></span>
                 </label>
                 {{ form.error(errors, 'attendance_confirmed') }}
 
                 <label class="check-field">
                     <input type="checkbox" name="privacy_consent" value="1" required {% if values.privacy_consent|default(false) %}checked{% endif %}>
-                    <span>I confirm that the information is accurate and consent to its use for evaluating this nomination. <span class="required">*</span></span>
+                    <span>I confirm that the information is accurate and consent to its use for evaluating this application. <span class="required">*</span></span>
                 </label>
                 {{ form.error(errors, 'privacy_consent') }}
             </div>
 
             <div class="submit-row">
-                <p>Submitting this form stores the nomination securely. If you provide an email address, we will send a confirmation to it.</p>
-                <button class="button" type="submit">Submit nomination</button>
+                <p>Submitting this form stores the application securely. We will send a confirmation to your email address.</p>
+                <button class="button" type="submit">Submit application</button>
             </div>
         </section>
     </form>

@@ -22,15 +22,14 @@
                 <tr>
                     <td style="padding:32px;">
                         <p style="margin:0 0 24px;color:#00b0f5;font-size:30px;font-weight:bold;">IFR</p>
-                        <h1 style="margin:0 0 16px;font-size:24px;">Nomination received</h1>
+                        <h1 style="margin:0 0 16px;font-size:24px;">Application received</h1>
                         <p>Hello {{ nominee }},</p>
-                        <p>Thank you for nominating <strong>{{ data.solution_name }}</strong>.</p>
+                        <p>Thank you for submitting <strong>{{ data.solution_name }}</strong>.</p>
                         <p>Your submission reference is <strong>#{{ nominationId }}</strong>. Below is a copy of the information you submitted.</p>
 
                         <h2 style="margin:30px 0 10px;color:#00354b;font-size:19px;">Company and contact</h2>
                         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #dbe5e9;">
-                            {{ mail.row('Nominee', nominee) }}
-                            {{ mail.row('Current title', data.nominee_title) }}
+                            {{ mail.row('Applicant', nominee) }}
                             {{ mail.row('Role/function', data.nominee_role) }}
                             {{ mail.row('Organization', data.nominee_organization) }}
                             {{ mail.row('Email', data.nominee_email) }}
@@ -38,8 +37,8 @@
                             {{ mail.row('Country', data.nominee_country) }}
                         </table>
 
-                        <h2 style="margin:30px 0 10px;color:#00354b;font-size:19px;">Case for nomination</h2>
-                        {{ mail.text_block('Name or title of the nominated solution', data.solution_name) }}
+                        <h2 style="margin:30px 0 10px;color:#00354b;font-size:19px;">Case for application</h2>
+                        {{ mail.text_block('Name or title of the submitted solution', data.solution_name) }}
                         {{ mail.text_block('Description', data.solution_description) }}
                         {{ mail.text_block('Why we should win the award?', data.solution_reason) }}
 
@@ -57,7 +56,7 @@
                         <h2 style="margin:30px 0 10px;color:#00354b;font-size:19px;">Confirmations</h2>
                         <ul style="margin:0;padding:0 0 0 20px;color:#243c47;font-size:14px;line-height:1.7;">
                             <li>Eligibility criteria confirmed</li>
-                            <li>Award ceremony attendance confirmed</li>
+                            <li>{{ attendanceConfirmationText }}</li>
                             <li>Accuracy and privacy consent confirmed</li>
                         </ul>
 

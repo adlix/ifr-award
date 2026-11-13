@@ -10,6 +10,12 @@ use DateTimeImmutable;
 
 class Dashboard extends BaseController
 {
+    private const SETTINGS_RULES = [
+        'starts_on' => ['label' => 'Start date', 'rules' => 'required|valid_date[Y-m-d]'],
+        'ends_on'   => ['label' => 'End date', 'rules' => 'required|valid_date[Y-m-d]'],
+        'attendance_confirmation_text' => ['label' => 'Attendance confirmation text', 'rules' => 'required|max_length[2000]'],
+    ];
+
     public function index(): string
     {
         $settingsModel = new NominationSettingsModel();
@@ -40,14 +46,10 @@ class Dashboard extends BaseController
         $values = [
             'starts_on' => trim((string) $this->request->getPost('starts_on')),
             'ends_on'   => trim((string) $this->request->getPost('ends_on')),
+            'attendance_confirmation_text' => trim((string) $this->request->getPost('attendance_confirmation_text')),
         ];
-        $rules = [
-            'starts_on' => ['label' => 'Start date', 'rules' => 'required|valid_date[Y-m-d]'],
-            'ends_on'   => ['label' => 'End date', 'rules' => 'required|valid_date[Y-m-d]'],
-        ];
-
         $errors = [];
-        if (! $this->validateData($values, $rules)) {
+        if (! $this->validateData($values, self::SETTINGS_RULES)) {
             $errors = $this->validator->getErrors();
         } elseif (new DateTimeImmutable($values['starts_on']) > new DateTimeImmutable($values['ends_on'])) {
             $errors['ends_on'] = 'The end date must be on or after the start date.';
@@ -59,13 +61,20 @@ class Dashboard extends BaseController
                 ->with('values', $values);
         }
 
-        (new NominationSettingsModel())->update(1, [
+        $saved = (new NominationSettingsModel())->update(1, [
             'starts_on'  => $values['starts_on'],
             'ends_on'    => $values['ends_on'],
+            'attendance_confirmation_text' => $values['attendance_confirmation_text'],
             'updated_by' => (int) auth()->id(),
         ]);
 
+        if (! $saved) {
+            return redirect()->back()
+                ->with('errors', ['settings' => 'The form settings could not be saved. Please try again.'])
+                ->with('values', $values);
+        }
+
         return redirect()->to(site_url('admin'))
-            ->with('success', 'The nomination period has been updated.');
+            ->with('success', 'The application form settings have been updated.');
     }
 }

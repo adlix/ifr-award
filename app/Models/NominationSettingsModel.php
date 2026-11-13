@@ -14,6 +14,7 @@ class NominationSettingsModel extends Model
     protected $allowedFields = [
         'starts_on',
         'ends_on',
+        'attendance_confirmation_text',
         'updated_by',
     ];
 

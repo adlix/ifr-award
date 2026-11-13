@@ -7,7 +7,7 @@
     <div class="hero-inner">
         <p class="eyebrow">Nomination review{% if nomination.category_label %} · {{ nomination.category_label }}{% endif %}</p>
         <h1>{{ nomination.solution_name ?: (nomination.nominee_first_name ~ ' ' ~ nomination.nominee_last_name) }}</h1>
-        <p>{{ nomination.nominee_title }} · {{ nomination.nominee_organization }} · Submitted {{ nomination.created_at|date('F j, Y') }}</p>
+        <p>{% if nomination.nominee_title %}{{ nomination.nominee_title }} · {% endif %}{{ nomination.nominee_organization }} · Submitted {{ nomination.created_at|date('F j, Y') }}</p>
     </div>
 </section>
 {% endblock %}
@@ -24,7 +24,7 @@
         <dl class="detail-grid">
             <div><dt>Contact</dt><dd>{{ nomination.nominee_first_name }} {{ nomination.nominee_last_name }}</dd></div>
             {% if nomination.nominee_role %}<div><dt>Role/function</dt><dd>{{ nomination.nominee_role }}</dd></div>{% endif %}
-            <div><dt>Current title</dt><dd>{{ nomination.nominee_title }}</dd></div>
+            {% if nomination.nominee_title %}<div><dt>Current title</dt><dd>{{ nomination.nominee_title }}</dd></div>{% endif %}
             <div><dt>Organization</dt><dd>{{ nomination.nominee_organization }}</dd></div>
             <div><dt>Country</dt><dd>{{ nomination.nominee_country }}</dd></div>
             <div><dt>Email</dt><dd>{% if nomination.nominee_email %}<a href="mailto:{{ nomination.nominee_email }}">{{ nomination.nominee_email }}</a>{% else %}Not provided{% endif %}</dd></div>

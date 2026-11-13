@@ -19,13 +19,13 @@ docker compose up --build
 
 Beim ersten Start werden die Datenbankmigrationen automatisch ausgeführt.
 
-- Anwendung: <http://localhost:8081>
+- Anwendung: <http://localhost:8082>
 - Mailpit: <http://localhost:8025>
 
 Registrierung und Anmeldung sind über `/register` und `/login` erreichbar.
 Nach der Anmeldung kann unter `/account` eine SMTP-Testmail versendet werden.
 
-SMTP-Zugangsdaten und Ports werden in `.env` konfiguriert.
+SMTP-Zugangsdaten und Ports werden in `.env` konfiguriert. Der Host-Port ist standardmäßig 8082 (`APP_PORT`); innerhalb des Docker-Netzwerks ist die Anwendung unter `app:80` erreichbar.
 
 ```bash
 docker compose exec app composer test

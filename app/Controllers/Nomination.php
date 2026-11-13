@@ -19,13 +19,12 @@ class Nomination extends BaseController
     private const RULES = [
         'nominee_first_name'   => ['label' => 'First name', 'rules' => 'required|max_length[100]'],
         'nominee_last_name'    => ['label' => 'Last name', 'rules' => 'required|max_length[100]'],
-        'nominee_title'        => ['label' => 'Current title', 'rules' => 'required|max_length[150]'],
         'nominee_role'         => ['label' => 'Role/function', 'rules' => 'required|max_length[150]'],
         'nominee_organization' => ['label' => 'Company or organization', 'rules' => 'required|max_length[180]'],
-        'nominee_email'        => ['label' => 'Email', 'rules' => 'permit_empty|valid_email|max_length[254]'],
+        'nominee_email'        => ['label' => 'Email', 'rules' => 'required|valid_email|max_length[254]'],
         'nominee_phone'        => ['label' => 'Phone', 'rules' => 'permit_empty|max_length[60]'],
         'nominee_country'      => ['label' => 'Country', 'rules' => 'required|max_length[100]'],
-        'solution_name'        => ['label' => 'Name or title of the nominated solution', 'rules' => 'required|max_length[255]'],
+        'solution_name'        => ['label' => 'Name or title of the submitted solution', 'rules' => 'required|max_length[255]'],
         'solution_description' => ['label' => 'Description', 'rules' => 'required|max_length[300]'],
         'solution_reason'      => ['label' => 'Why we should win the award', 'rules' => 'required|max_length[300]'],
         'eligibility_confirmed'       => ['label' => 'Eligibility confirmation', 'rules' => 'required|in_list[1]'],
@@ -35,7 +34,7 @@ class Nomination extends BaseController
 
     private const MAX_DOCUMENTS = 3;
 
-    private const MAX_DOCUMENT_SIZE = 20 * 1024 * 1024;
+    private const MAX_DOCUMENT_SIZE = 200 * 1024 * 1024;
 
     private const ALLOWED_UPLOAD_TYPES = [
         'pdf'  => ['application/pdf'],
@@ -135,10 +134,10 @@ class Nomination extends BaseController
 
             return $this->response
                 ->setStatusCode(500)
-                ->setBody($this->renderForm($values, ['documents' => 'The nomination could not be stored. Please try again.']));
+                ->setBody($this->renderForm($values, ['documents' => 'The application could not be stored. Please try again.']));
         }
 
-        $mailSent = ! empty($values['nominee_email']) ? $this->sendConfirmation($values, (int) $nominationId) : null;
+        $mailSent = $this->sendConfirmation($values, (int) $nominationId);
 
         return redirect()
             ->to(site_url('thank-you'))
@@ -184,12 +183,13 @@ class Nomination extends BaseController
     private function nominationData(array $values, ?int $userId): array
     {
         $fields = [
-            'nominee_first_name', 'nominee_last_name', 'nominee_title', 'nominee_role',
+            'nominee_first_name', 'nominee_last_name', 'nominee_role',
             'nominee_organization', 'nominee_email', 'nominee_phone', 'nominee_country',
             'solution_name', 'solution_description', 'solution_reason',
         ];
 
-        $data = ['user_id' => $userId];
+        // Keep inserts compatible with the non-null legacy title column.
+        $data = ['user_id' => $userId, 'nominee_title' => ''];
         foreach ($fields as $field) {
             $data[$field] = trim((string) ($values[$field] ?? ''));
         }
@@ -227,7 +227,7 @@ class Nomination extends BaseController
             $name = basename($document->getClientName());
 
             if (in_array($document->getError(), [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)) {
-                return 'Each document may be no larger than 20 MB.';
+                return 'Each document may be no larger than 200 MB.';
             }
 
             if (! $document->isValid()) {
@@ -235,7 +235,7 @@ class Nomination extends BaseController
             }
 
             if ($document->getSize() > self::MAX_DOCUMENT_SIZE) {
-                return 'Each document may be no larger than 20 MB.';
+                return 'Each document may be no larger than 200 MB.';
             }
 
             $extension = strtolower($document->getClientExtension());
@@ -286,12 +286,13 @@ class Nomination extends BaseController
 
         $email = service('email');
         $email->setTo((string) $values['nominee_email']);
-        $email->setSubject('IFR Award nomination received');
+        $email->setSubject('IFR Award application received');
         $email->setMessage(service('twig')->render('emails/nomination-confirmation.html.twig', [
             'nominationId' => $nominationId,
             'nominee'      => trim($values['nominee_first_name'] . ' ' . $values['nominee_last_name']),
             'data'         => $values,
             'documents'    => $documents,
+            'attendanceConfirmationText' => (new NominationSettingsModel())->current()['attendance_confirmation_text'],
         ]));
 
         if (! $email->send()) {
