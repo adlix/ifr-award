@@ -13,6 +13,7 @@ class Account extends BaseController
 
         return service('twig')->render('account.html.twig', [
             'email'    => $user?->getEmail(),
+            'canTestSmtp' => $user?->inGroup('admin', 'superadmin') ?? false,
             'username' => $user?->username,
             'success'  => session()->getFlashdata('success'),
             'error'    => session()->getFlashdata('error'),

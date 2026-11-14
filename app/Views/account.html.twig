@@ -47,12 +47,17 @@
             <button class="button" type="submit">Change password</button>
         </form>
 
+        {% if canTestSmtp %}
         <h2>SMTP test</h2>
         <p>Send a test email to your account address. In local development it appears in Mailpit.</p>
         <form action="{{ site_url('account/test-email') }}" method="post">
             {{ csrf_field() }}
             <button class="button secondary" type="submit">Send test email</button>
         </form>
+        {% endif %}
+
+        <h2>Sign out</h2>
+        <a class="button secondary" href="{{ site_url('logout') }}">Logout</a>
     </section>
 </div>
 {% endblock %}

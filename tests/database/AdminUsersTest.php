@@ -243,6 +243,28 @@ final class AdminUsersTest extends CIUnitTestCase
         $this->assertNotNull(auth()->getProvider()->findById($user->id));
     }
 
+    public function testSmtpTestIsVisibleAndAccessibleOnlyForAdministrators(): void
+    {
+        $filter = new \CodeIgniter\Shield\Filters\GroupFilter();
+        foreach (['jury', 'user', 'developer', 'admin', 'superadmin'] as $role) {
+            $this->actingAs($this->makeUser($role, $role));
+            $html = (new \App\Controllers\Account())->index();
+            $allowed = in_array($role, ['admin', 'superadmin'], true);
+            $this->assertSame($allowed, str_contains($html, 'action="' . site_url('account/test-email') . '"'));
+            $this->assertSame($allowed, $filter->before(service('request'), ['admin', 'superadmin']) === null);
+            $this->assertStringContainsString('href="' . site_url('logout') . '"', $html);
+            auth()->logout();
+        }
+    }
+
+    public function testAccountLogoutEndsTheSession(): void
+    {
+        $this->actingAs($this->makeUser('jury'));
+        $this->assertTrue(auth()->loggedIn());
+        (new \CodeIgniter\Shield\Controllers\LoginController())->logoutAction();
+        $this->assertFalse(auth()->loggedIn());
+    }
+
     public function testPublicRegistrationRemainsDisabled(): void
     {
         $this->assertFalse(config('Auth')->allowRegistration);
