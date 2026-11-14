@@ -1,6 +1,6 @@
 <?php
 
-use App\Controllers\Admin\Dashboard;
+use App\Controllers\Admin\Settings;
 use CodeIgniter\Test\CIUnitTestCase;
 use Config\Services;
 use Twig\Environment;
@@ -13,7 +13,7 @@ final class FormSettingsTest extends CIUnitTestCase
 {
     public function testAttendanceTextIsRequiredAndLimited(): void
     {
-        $rules = (new ReflectionClass(Dashboard::class))->getConstant('SETTINGS_RULES');
+        $rules = (new ReflectionClass(Settings::class))->getConstant('SETTINGS_RULES');
         $values = ['starts_on' => '2027-01-01', 'ends_on' => '2027-03-31'];
         $validation = Services::validation();
 
@@ -48,7 +48,7 @@ final class FormSettingsTest extends CIUnitTestCase
             'attendanceConfirmationText' => $text, 'data' => [], 'documents' => [],
         ];
 
-        foreach (['nomination/form.html.twig', 'admin/dashboard.html.twig', 'emails/nomination-confirmation.html.twig'] as $template) {
+        foreach (['nomination/form.html.twig', 'admin/settings.html.twig', 'emails/nomination-confirmation.html.twig'] as $template) {
             $html = $twig->render($template, $context);
             $this->assertStringContainsString('12 May 2028 &amp; the ceremony on 20 June 2028.', $html);
             $this->assertStringContainsString('&lt;b&gt;Confirm&lt;/b&gt;', $html);

@@ -16,9 +16,10 @@ $routes->group('', ['filter' => 'session'], static function (RouteCollection $ro
     $routes->post('account/test-email', 'Account::sendTestEmail', ['filter' => 'group:admin,superadmin']);
 });
 
-$routes->group('admin', ['filter' => 'permission:admin.access'], static function (RouteCollection $routes): void {
-    $routes->get('/', 'Admin\\Dashboard::index');
-    $routes->post('nomination-period', 'Admin\\Dashboard::updatePeriod');
+$routes->group('admin', ['filter' => 'group:admin,superadmin'], static function (RouteCollection $routes): void {
+    $routes->get('settings', 'Admin\\Settings::index');
+    $routes->post('settings', 'Admin\\Settings::updatePeriod');
+    $routes->post('nomination-period', 'Admin\\Settings::updatePeriod');
 });
 
 $routes->group('admin', ['filter' => 'permission:users.manage-admins'], static function (RouteCollection $routes): void {
@@ -31,6 +32,7 @@ $routes->group('admin', ['filter' => 'permission:users.manage-admins'], static f
 });
 
 $routes->group('admin', ['filter' => 'permission:award.review'], static function (RouteCollection $routes): void {
+    $routes->get('/', 'Admin\\Nominations::index');
     $routes->get('nominations', 'Admin\\Nominations::index');
     $routes->get('nominations/(:num)', 'Admin\\Nominations::show/$1');
     $routes->get('nominations/(:num)/documents/(:num)', 'Admin\\Nominations::download/$1/$2');

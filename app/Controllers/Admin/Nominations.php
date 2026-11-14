@@ -5,6 +5,7 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\NominationDocumentModel;
 use App\Models\NominationModel;
+use App\Models\NominationSettingsModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\ResponseInterface;
 
@@ -50,7 +51,21 @@ class Nominations extends BaseController
             unset($nomination);
         }
 
+        $settingsModel = new NominationSettingsModel();
+        $settings = $settingsModel->current();
+        $currentCount = 0;
+        if ($settings['starts_on'] !== null && $settings['ends_on'] !== null) {
+            $currentCount = (new NominationModel())
+                ->where('created_at >=', $settings['starts_on'] . ' 00:00:00')
+                ->where('created_at <=', $settings['ends_on'] . ' 23:59:59')
+                ->countAllResults();
+        }
+
         return service('twig')->render('admin/nominations/index.html.twig', [
+            'settings' => $settings,
+            'periodOpen' => $settingsModel->isOpen($settings),
+            'currentCount' => $currentCount,
+            'totalCount' => (new NominationModel())->countAllResults(),
             'periods'        => $periods,
             'selectedPeriod' => $selectedPeriod,
             'nominations'    => $nominations,

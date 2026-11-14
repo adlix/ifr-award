@@ -1,13 +1,13 @@
 {% extends 'layout.html.twig' %}
 
-{% block title %}Admin Dashboard · IFR Robotics Awards{% endblock %}
+{% block title %}Settings · IFR Robotics Awards{% endblock %}
 
 {% block hero %}
 <section class="hero hero-compact">
     <div class="hero-inner">
         <p class="eyebrow">Administration</p>
-        <h1>Nomination dashboard</h1>
-        <p>Monitor current submissions and manage when nominations are accepted.</p>
+        <h1>Settings</h1>
+        <p>Manage submission dates and the application form.</p>
     </div>
 </section>
 {% endblock %}
@@ -15,24 +15,6 @@
 {% block content %}
 <div class="content-shell">
     {% if success %}<p class="notice">{{ success }}</p>{% endif %}
-
-    <div class="dashboard-grid">
-        <section class="stat-card">
-            <span class="stat-label">Current period</span>
-            <strong class="stat-number">{{ currentCount }}</strong>
-            <span>Nominations from {{ settings.starts_on|date('M j, Y') }} to {{ settings.ends_on|date('M j, Y') }}</span>
-        </section>
-        <section class="stat-card">
-            <span class="stat-label">All submissions</span>
-            <strong class="stat-number">{{ totalCount }}</strong>
-            <span>Total nominations stored</span>
-        </section>
-        <section class="stat-card">
-            <span class="stat-label">Submission status</span>
-            <strong class="status-badge {{ periodOpen ? 'open' : 'closed' }}">{{ periodOpen ? 'Open' : 'Closed' }}</strong>
-            <span>{{ periodOpen ? 'Public submissions are currently accepted.' : 'Public submissions are currently blocked.' }}</span>
-        </section>
-    </div>
 
     <section class="card admin-panel">
         <p class="eyebrow">Application form settings</p>
@@ -47,7 +29,7 @@
             </div>
         {% endif %}
 
-        <form action="{{ site_url('admin/nomination-period') }}" method="post">
+        <form action="{{ site_url('admin/settings') }}" method="post">
             {{ csrf_field() }}
             <div class="field-grid">
                 <div class="field">

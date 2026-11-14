@@ -1,12 +1,12 @@
 {% extends 'layout.html.twig' %}
 
-{% block title %}Nomination review · IFR Robotics Awards{% endblock %}
+{% block title %}Dashboard · IFR Robotics Awards{% endblock %}
 
 {% block hero %}
 <section class="hero hero-compact">
     <div class="hero-inner">
         <p class="eyebrow">Jury & administration</p>
-        <h1>Nomination review</h1>
+        <h1>Nomination dashboard</h1>
         <p>Review nominations for an award cycle and open each complete submission with its supporting documents.</p>
     </div>
 </section>
@@ -14,6 +14,24 @@
 
 {% block content %}
 <div class="content-shell review-shell">
+    <div class="dashboard-grid">
+        <section class="stat-card">
+            <span class="stat-label">Current period</span>
+            <strong class="stat-number">{{ currentCount }}</strong>
+            {% if settings.starts_on and settings.ends_on %}<span>Nominations from {{ settings.starts_on|date('M j, Y') }} to {{ settings.ends_on|date('M j, Y') }}</span>{% else %}<span>No submission period configured</span>{% endif %}
+        </section>
+        <section class="stat-card">
+            <span class="stat-label">All submissions</span>
+            <strong class="stat-number">{{ totalCount }}</strong>
+            <span>Total nominations stored</span>
+        </section>
+        <section class="stat-card">
+            <span class="stat-label">Submission status</span>
+            <strong class="status-badge {{ periodOpen ? 'open' : 'closed' }}">{{ periodOpen ? 'Open' : 'Closed' }}</strong>
+            <span>{{ periodOpen ? 'Public submissions are currently accepted.' : 'Public submissions are currently blocked.' }}</span>
+        </section>
+    </div>
+
     <section class="review-toolbar" aria-label="Award cycle filter">
         <div>
             <p class="eyebrow">Award cycle</p>

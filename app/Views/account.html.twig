@@ -15,9 +15,8 @@
 {% block content %}
 <div class="content-shell">
     <section class="card">
-        <h2>Your award nominations</h2>
-        <p>Use your account to submit a candidate for an IFR Robotics Award.</p>
-        <a class="button" href="{{ site_url('/') }}">Start nomination</a>
+        <h2>Sign out</h2>
+        <a class="button secondary" href="{{ site_url('logout') }}">Logout</a>
 
         {% if success %}<p class="notice">{{ success }}</p>{% endif %}
         {% if error %}<p class="notice error">{{ error }}</p>{% endif %}
@@ -55,9 +54,6 @@
             <button class="button secondary" type="submit">Send test email</button>
         </form>
         {% endif %}
-
-        <h2>Sign out</h2>
-        <a class="button secondary" href="{{ site_url('logout') }}">Logout</a>
     </section>
 </div>
 {% endblock %}
