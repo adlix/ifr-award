@@ -653,10 +653,80 @@ textarea {
     min-width: 700px;
 }
 
-.user-actions {
+.user-form .field-grid {
+    align-items: start;
+    margin-bottom: 24px;
+}
+
+.user-form .field {
+    align-content: start;
+}
+
+.user-form .field input,
+.user-form .field select {
+    height: 48px;
+    line-height: 1.4;
+}
+
+.user-form-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
+}
+
+.user-actions-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--ifr-line);
+    border-radius: 4px;
+    color: var(--ifr-navy);
+    background: #fff;
+    cursor: pointer;
+}
+
+.user-actions-trigger:hover,
+.user-actions-trigger[aria-expanded="true"] {
+    background: var(--ifr-soft);
+}
+
+.user-actions-trigger:focus-visible,
+.user-actions-menu a:focus-visible {
+    outline: 2px solid var(--ifr-blue);
+    outline-offset: 2px;
+}
+
+.user-actions-menu {
+    position: fixed;
+    inset: auto;
+    width: 168px;
+    max-width: calc(100vw - 24px);
+    margin: 0;
+    padding: 6px;
+    border: 1px solid var(--ifr-line);
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(0, 29, 54, .16);
+}
+
+.user-actions-menu a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 12px;
+    border-radius: 3px;
+    color: var(--ifr-navy);
+    text-decoration: none;
+}
+
+.user-actions-menu a:hover {
+    background: var(--ifr-soft);
+}
+
+.user-actions-menu .user-action-delete {
+    color: var(--ifr-error);
 }
 
 .nomination-closed {
