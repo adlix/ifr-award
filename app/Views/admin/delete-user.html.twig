@@ -1,0 +1,22 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Delete user · IFR Robotics Awards{% endblock %}
+
+{% block content %}
+<div class="content-shell">
+    <section class="card">
+        <h1>Delete user</h1>
+        {% if isSelf %}
+            <p class="notice error" role="alert">You cannot delete your own administrator account.</p>
+        {% else %}
+            <p>Delete the account for <strong>{{ user.username ?: user.email }}</strong> ({{ user.email }})? This user will no longer be able to sign in.</p>
+            <form action="{{ site_url('admin/users/' ~ user.id ~ '/delete') }}" method="post">
+                {{ csrf_field() }}
+                <button class="button" type="submit">Delete user</button>
+                <a class="button secondary" href="{{ site_url('admin/users') }}">Cancel</a>
+            </form>
+        {% endif %}
+        {% if isSelf %}<a class="button secondary" href="{{ site_url('admin/users') }}">Back to users</a>{% endif %}
+    </section>
+</div>
+{% endblock %}

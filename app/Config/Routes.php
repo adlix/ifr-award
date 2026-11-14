@@ -24,6 +24,10 @@ $routes->group('admin', ['filter' => 'permission:admin.access'], static function
 $routes->group('admin', ['filter' => 'permission:users.manage-admins'], static function (RouteCollection $routes): void {
     $routes->get('users', 'Admin\\Users::index');
     $routes->post('users', 'Admin\\Users::create');
+    $routes->get('users/(:num)/edit', 'Admin\\Users::edit/$1');
+    $routes->post('users/(:num)', 'Admin\\Users::update/$1');
+    $routes->get('users/(:num)/delete', 'Admin\\Users::confirmDelete/$1');
+    $routes->post('users/(:num)/delete', 'Admin\\Users::delete/$1');
 });
 
 $routes->group('admin', ['filter' => 'permission:award.review'], static function (RouteCollection $routes): void {

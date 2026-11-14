@@ -13,14 +13,15 @@
 {% endblock %}
 
 {% block content %}
-<div class="content-shell">
+<div class="content-shell users-shell">
+    {% if error %}<p class="notice error" role="alert">{{ error }}</p>{% endif %}
     {% if success %}<p class="notice" role="status">{{ success }}</p>{% endif %}
-    <section class="card">
+    <section class="card admin-panel">
         <h2>Users</h2>
         {% if users %}
         <div class="table-scroll">
-            <table class="nomination-table">
-                <thead><tr><th scope="col">Username</th><th scope="col">Email</th><th scope="col">Roles</th><th scope="col">Status</th></tr></thead>
+            <table class="nomination-table users-table">
+                <thead><tr><th scope="col">Username</th><th scope="col">Email</th><th scope="col">Roles</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
                 <tbody>
                 {% for user in users %}
                     <tr>
@@ -28,6 +29,9 @@
                         <td>{{ user.email }}</td>
                         <td>{{ user.getGroups()|join(', ') }}</td>
                         <td>{{ user.active ? 'Active' : 'Inactive' }}</td>
+                        <td><div class="user-actions"><a class="text-link" href="{{ site_url('admin/users/' ~ user.id ~ '/edit') }}">Edit<span class="visually-hidden"> {{ user.username }}</span></a>
+                            {% if user.id != currentUserId %}<a class="text-link" href="{{ site_url('admin/users/' ~ user.id ~ '/delete') }}">Delete<span class="visually-hidden"> {{ user.username }}</span></a>{% endif %}
+                        </div></td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -37,12 +41,12 @@
     </section>
 
     <section class="card admin-panel">
-        <h2>Add user</h2>
-        <p>Create a jury or admin account and share the initial password with the user. Users can change their password in their account.</p>
+        <h2>{{ editing ? 'Edit user' : 'Add user' }}</h2>
+        {% if editing %}<p>Update the username, email address and role.</p>{% else %}<p>Create a jury or admin account and share the initial password with the user. Users can change their password in their account.</p>{% endif %}
         {% if errors %}
         <div class="form-errors" role="alert"><ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul></div>
         {% endif %}
-        <form action="{{ site_url('admin/users') }}" method="post">
+        <form action="{{ site_url(editing ? 'admin/users/' ~ editing.id : 'admin/users') }}" method="post">
             {{ csrf_field() }}
             <div class="field-grid">
                 <div class="field">
@@ -61,6 +65,7 @@
                         <option value="admin" {{ values.role|default('jury') == 'admin' ? 'selected' : '' }}>Admin — manage nominations and users</option>
                     </select>
                 </div>
+                {% if not editing %}
                 <div class="field">
                     <label for="user-password">Initial password</label>
                     <input id="user-password" name="password" type="password" autocomplete="new-password" required>
@@ -69,8 +74,10 @@
                     <label for="user-password-confirm">Confirm initial password</label>
                     <input id="user-password-confirm" name="password_confirm" type="password" autocomplete="new-password" required>
                 </div>
+                {% endif %}
             </div>
-            <button class="button" type="submit">Create user</button>
+            <button class="button" type="submit">{{ editing ? 'Save changes' : 'Create user' }}</button>
+            {% if editing %}<a class="button secondary" href="{{ site_url('admin/users') }}">Cancel</a>{% endif %}
         </form>
     </section>
 </div>

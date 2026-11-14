@@ -639,6 +639,26 @@ textarea {
     max-width: none;
 }
 
+.users-shell {
+    display: grid;
+    gap: 24px;
+}
+
+.users-shell > .card {
+    width: 100%;
+    min-width: 0;
+}
+
+.users-table {
+    min-width: 700px;
+}
+
+.user-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
 .nomination-closed {
     border-top: 6px solid var(--ifr-error);
 }

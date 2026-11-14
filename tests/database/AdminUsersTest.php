@@ -138,6 +138,111 @@ final class AdminUsersTest extends CIUnitTestCase
         $this->assertStringNotContainsString($user->getPasswordHash(), $html);
     }
 
+    private function updateUser(User $user, array $changes = []): void
+    {
+        $request = service('request');
+        $request->setGlobal('post', array_replace([
+            'username' => $user->username,
+            'email' => $user->getEmail(),
+            'role' => 'jury',
+        ], $changes));
+        $controller = new Users();
+        $controller->initController($request, service('response'), service('logger'));
+        $controller->update((int) $user->id);
+    }
+
+    public function testUpdatesEmailUsernameAndRoleWithoutChangingPassword(): void
+    {
+        $this->actingAs($this->makeUser('admin'));
+        $user = $this->makeUser('jury', 'juror');
+        $hash = $user->getPasswordHash();
+        $this->updateUser($user, ['username' => 'updated', 'email' => 'UPDATED@example.org', 'role' => 'admin', 'password' => 'ignored']);
+        $updated = auth()->getProvider()->findById($user->id);
+        $this->assertSame('updated', $updated->username);
+        $this->assertSame('updated@example.org', $updated->getEmail());
+        $this->assertSame(['admin'], $updated->getGroups());
+        $this->assertSame($hash, $updated->getPasswordHash());
+        $this->assertSame('The user has been updated.', session()->getFlashdata('success'));
+    }
+
+    public function testUnchangedDetailsCanBeSavedAndRoleCanBeChangedAlone(): void
+    {
+        $this->actingAs($this->makeUser('admin'));
+        $user = $this->makeUser('jury', 'juror');
+        $this->updateUser($user, ['role' => 'admin']);
+        $this->assertSame(['admin'], auth()->getProvider()->findById($user->id)->getGroups());
+        $this->assertNull(session()->getFlashdata('userErrors'));
+    }
+
+    public function testUpdateRejectsDuplicateDetailsAndInvalidRole(): void
+    {
+        $this->actingAs($this->makeUser('admin'));
+        $user = $this->makeUser('jury', 'juror');
+        $this->updateUser($user, ['username' => 'existing', 'email' => 'existing@example.com', 'role' => 'superadmin']);
+        $errors = session()->getFlashdata('userErrors');
+        foreach (['username', 'email', 'role'] as $field) {
+            $this->assertArrayHasKey($field, $errors);
+        }
+        $this->assertSame('juror', auth()->getProvider()->findById($user->id)->username);
+    }
+
+    public function testAdministratorCannotRemoveOwnRole(): void
+    {
+        $user = $this->makeUser('admin');
+        $this->actingAs($user);
+        $this->updateUser($user, ['role' => 'jury']);
+        $this->assertArrayHasKey('role', session()->getFlashdata('userErrors'));
+        $this->assertSame(['admin'], auth()->getProvider()->findById($user->id)->getGroups());
+    }
+
+    public function testEditFormIsPrefilledAndDoesNotRequirePassword(): void
+    {
+        $this->actingAs($this->makeUser('admin'));
+        $user = $this->makeUser('jury', 'juror');
+        $html = (new Users())->edit((int) $user->id);
+        $this->assertStringContainsString('value="juror"', $html);
+        $this->assertStringContainsString('value="juror@example.com"', $html);
+        $this->assertStringContainsString('Save changes', $html);
+        $this->assertStringNotContainsString('name="password"', $html);
+    }
+
+    public function testUnknownUserReturnsNotFound(): void
+    {
+        $this->expectException(\CodeIgniter\Exceptions\PageNotFoundException::class);
+        (new Users())->edit(99999);
+    }
+
+    public function testDeleteRemovesAccountFromActiveUsersAndKeepsHistory(): void
+    {
+        $this->actingAs($this->makeUser('admin'));
+        $user = $this->makeUser('jury', 'juror');
+        (new Users())->delete((int) $user->id);
+        $this->assertNull(auth()->getProvider()->findById($user->id));
+        $this->assertNull(auth()->getProvider()->findByCredentials(['email' => 'juror@example.com']));
+        $this->assertNotNull(auth()->getProvider()->withDeleted()->find($user->id));
+        $this->assertSame('The user has been deleted.', session()->getFlashdata('success'));
+    }
+
+    public function testAdministratorCannotDeleteOwnAccount(): void
+    {
+        $user = $this->makeUser('admin');
+        $this->actingAs($user);
+        (new Users())->delete((int) $user->id);
+        $this->assertNotNull(auth()->getProvider()->findById($user->id));
+        $this->assertNotNull(session()->getFlashdata('error'));
+    }
+
+    public function testDeleteRequiresConfirmationWithCsrfToken(): void
+    {
+        $this->actingAs($this->makeUser('admin'));
+        $user = $this->makeUser('jury', 'juror');
+        $html = (new Users())->confirmDelete((int) $user->id);
+        $this->assertStringContainsString('juror@example.com', $html);
+        $this->assertStringContainsString('method="post"', $html);
+        $this->assertStringContainsString('name="csrf_test_name"', $html);
+        $this->assertNotNull(auth()->getProvider()->findById($user->id));
+    }
+
     public function testPublicRegistrationRemainsDisabled(): void
     {
         $this->assertFalse(config('Auth')->allowRegistration);
