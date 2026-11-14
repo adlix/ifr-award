@@ -31,7 +31,7 @@
                         <td>{{ user.active ? 'Active' : 'Inactive' }}</td>
                         <td>
                             <button class="user-actions-trigger" type="button" popovertarget="user-actions-{{ user.id }}" aria-label="Actions for {{ user.username ?: user.email }}" data-user-menu-trigger>
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
                             </button>
                             <div id="user-actions-{{ user.id }}" class="user-actions-menu" popover aria-label="Actions for {{ user.username ?: user.email }}">
                                 <a href="{{ site_url('admin/users/' ~ user.id ~ '/edit') }}">Edit</a>
@@ -92,5 +92,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ site_url('assets/js/user-actions.js') }}" defer></script>
+<script src="{{ site_url('assets/js/user-actions.js') }}?v=20261114-2" defer></script>
 {% endblock %}
