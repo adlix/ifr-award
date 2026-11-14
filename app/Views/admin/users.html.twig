@@ -48,7 +48,7 @@
 
     <section class="card admin-panel">
         <h2>{{ editing ? 'Edit user' : 'Add user' }}</h2>
-        {% if editing %}<p>Update the username, email address and role.</p>{% else %}<p>Create a jury or admin account and share the initial password with the user. Users can change their password in their account.</p>{% endif %}
+        {% if editing %}<p>Update the username, email address and role. Leave both password fields empty to keep the current password.</p>{% else %}<p>Create a jury or admin account and share the initial password with the user. Users can change their password in their account.</p>{% endif %}
         {% if errors %}
         <div class="form-errors" role="alert"><ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul></div>
         {% endif %}
@@ -71,16 +71,14 @@
                         <option value="admin" {{ values.role|default('jury') == 'admin' ? 'selected' : '' }}>Admin — manage nominations and users</option>
                     </select>
                 </div>
-                {% if not editing %}
                 <div class="field">
-                    <label for="user-password">Initial password</label>
-                    <input id="user-password" name="password" type="password" autocomplete="new-password" required>
+                    <label for="user-password">{{ editing ? 'New password (optional)' : 'Initial password' }}</label>
+                    <input id="user-password" name="password" type="password" autocomplete="new-password" {{ not editing ? 'required' : '' }}>
                 </div>
                 <div class="field">
-                    <label for="user-password-confirm">Confirm initial password</label>
-                    <input id="user-password-confirm" name="password_confirm" type="password" autocomplete="new-password" required>
+                    <label for="user-password-confirm">{{ editing ? 'Confirm new password' : 'Confirm initial password' }}</label>
+                    <input id="user-password-confirm" name="password_confirm" type="password" autocomplete="new-password" {{ not editing ? 'required' : '' }}>
                 </div>
-                {% endif %}
             </div>
             <div class="user-form-actions">
             <button class="button" type="submit">{{ editing ? 'Save changes' : 'Create user' }}</button>

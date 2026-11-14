@@ -113,11 +113,20 @@ class Users extends BaseController
         $identityId = $user->getEmailIdentity()?->id ?? 0;
         $emailRules['rules'][] = 'is_unique[' . $config->tables['identities'] . '.secret,id,' . $identityId . ']';
 
-        if (! $this->validateData($values, [
+        $passwordData = $this->request->getPost(['password', 'password_confirm']);
+        $changePassword = ($passwordData['password'] ?? '') !== '' || ($passwordData['password_confirm'] ?? '') !== '';
+        $rules = [
             'username' => $usernameRules,
             'email' => $emailRules,
             'role' => ['label' => 'Role', 'rules' => 'required|in_list[jury,admin]'],
-        ], [], $config->DBGroup)) {
+        ];
+        if ($changePassword) {
+            $validation = new ValidationRules();
+            $rules['password'] = $validation->getPasswordRules();
+            $rules['password_confirm'] = $validation->getPasswordConfirmRules();
+        }
+
+        if (! $this->validateData($values + $passwordData, $rules, [], $config->DBGroup)) {
             return $this->failed($values, $this->validator->getErrors(), $id);
         }
 
@@ -126,11 +135,19 @@ class Users extends BaseController
             return $this->failed($values, ['role' => 'You cannot remove your own administrator role.'], $id);
         }
 
+        $user->username = $values['username'];
+        $user->email = $values['email'];
+        if ($changePassword) {
+            $passwordResult = service('passwords')->check($passwordData['password'], $user);
+            if (! $passwordResult->isOK()) {
+                return $this->failed($values, ['password' => $passwordResult->reason()], $id);
+            }
+            $user->password = $passwordData['password'];
+        }
+
         $db = db_connect($config->DBGroup);
         $db->transBegin();
         try {
-            $user->username = $values['username'];
-            $user->email = $values['email'];
             auth()->getProvider()->save($user);
             $user->syncGroups($values['role']);
             if (! $db->transStatus() || ! $db->transCommit()) {

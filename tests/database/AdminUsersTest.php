@@ -156,7 +156,7 @@ final class AdminUsersTest extends CIUnitTestCase
         $this->actingAs($this->makeUser('admin'));
         $user = $this->makeUser('jury', 'juror');
         $hash = $user->getPasswordHash();
-        $this->updateUser($user, ['username' => 'updated', 'email' => 'UPDATED@example.org', 'role' => 'admin', 'password' => 'ignored']);
+        $this->updateUser($user, ['username' => 'updated', 'email' => 'UPDATED@example.org', 'role' => 'admin', 'password' => '', 'password_confirm' => '']);
         $updated = auth()->getProvider()->findById($user->id);
         $this->assertSame('updated', $updated->username);
         $this->assertSame('updated@example.org', $updated->getEmail());
@@ -203,7 +203,51 @@ final class AdminUsersTest extends CIUnitTestCase
         $this->assertStringContainsString('value="juror"', $html);
         $this->assertStringContainsString('value="juror@example.com"', $html);
         $this->assertStringContainsString('Save changes', $html);
-        $this->assertStringNotContainsString('name="password"', $html);
+        $this->assertMatchesRegularExpression('/<input[^>]*name="password"[^>]*>/', $html);
+        $this->assertDoesNotMatchRegularExpression('/<input[^>]*name="password"[^>]*required/', $html);
+        $this->assertStringContainsString('Leave both password fields empty', $html);
+    }
+
+    public function testAdminCanSetAnotherUsersPassword(): void
+    {
+        $this->actingAs($this->makeUser('admin'));
+        $user = $this->makeUser('jury', 'juror');
+        $this->updateUser($user, ['password' => 'V7!rQ9#nL2@xT8z', 'password_confirm' => 'V7!rQ9#nL2@xT8z']);
+        $updated = auth()->getProvider()->findById($user->id);
+        $this->assertTrue(service('passwords')->verify('V7!rQ9#nL2@xT8z', $updated->getPasswordHash()));
+        $this->assertFalse(service('passwords')->verify('Q8!pR3#vN9@tW5k', $updated->getPasswordHash()));
+        $this->assertArrayNotHasKey('password', session()->get('userValues') ?? []);
+    }
+
+    public function testAdminCanSetOwnPasswordInUserManagement(): void
+    {
+        $user = $this->makeUser('admin');
+        $this->actingAs($user);
+        $this->updateUser($user, ['role' => 'admin', 'password' => 'V7!rQ9#nL2@xT8z', 'password_confirm' => 'V7!rQ9#nL2@xT8z']);
+        $this->assertTrue(service('passwords')->verify('V7!rQ9#nL2@xT8z', auth()->getProvider()->findById($user->id)->getPasswordHash()));
+    }
+
+    public function testInvalidPasswordChangesDoNotModifyUserOrStorePasswordsInSession(): void
+    {
+        $this->actingAs($this->makeUser('admin'));
+        $user = $this->makeUser('jury', 'juror');
+        $hash = $user->getPasswordHash();
+        foreach ([
+            ['password' => 'abc', 'password_confirm' => 'abc'],
+            ['password' => 'V7!rQ9#nL2@xT8z', 'password_confirm' => 'different'],
+            ['password' => 'V7!rQ9#nL2@xT8z', 'password_confirm' => ''],
+            ['password' => '', 'password_confirm' => 'V7!rQ9#nL2@xT8z'],
+            ['password' => 'juror@example.com', 'password_confirm' => 'juror@example.com'],
+        ] as $passwords) {
+            service('validation')->reset();
+            $this->updateUser($user, $passwords + ['username' => 'changed']);
+            $this->assertNotEmpty(session()->getFlashdata('userErrors'));
+            $updated = auth()->getProvider()->findById($user->id);
+            $this->assertSame($hash, $updated->getPasswordHash());
+            $this->assertSame('juror', $updated->username);
+            $this->assertArrayNotHasKey('password', session()->get('userValues'));
+            $this->assertArrayNotHasKey('password_confirm', session()->get('userValues'));
+        }
     }
 
     public function testUnknownUserReturnsNotFound(): void
