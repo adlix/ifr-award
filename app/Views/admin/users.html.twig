@@ -1,0 +1,77 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Users · IFR Robotics Awards{% endblock %}
+
+{% block hero %}
+<section class="hero hero-compact">
+    <div class="hero-inner">
+        <p class="eyebrow">Administration</p>
+        <h1>User management</h1>
+        <p>Manage access for jury members and administrators. Nominators submit without an account.</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="content-shell">
+    {% if success %}<p class="notice" role="status">{{ success }}</p>{% endif %}
+    <section class="card">
+        <h2>Users</h2>
+        {% if users %}
+        <div class="table-scroll">
+            <table class="nomination-table">
+                <thead><tr><th scope="col">Username</th><th scope="col">Email</th><th scope="col">Roles</th><th scope="col">Status</th></tr></thead>
+                <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.username ?: '—' }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.getGroups()|join(', ') }}</td>
+                        <td>{{ user.active ? 'Active' : 'Inactive' }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}<p>No users yet.</p>{% endif %}
+    </section>
+
+    <section class="card admin-panel">
+        <h2>Add user</h2>
+        <p>Create a jury or admin account and share the initial password with the user. Users can change their password in their account.</p>
+        {% if errors %}
+        <div class="form-errors" role="alert"><ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul></div>
+        {% endif %}
+        <form action="{{ site_url('admin/users') }}" method="post">
+            {{ csrf_field() }}
+            <div class="field-grid">
+                <div class="field">
+                    <label for="user-username">Username</label>
+                    <input id="user-username" name="username" value="{{ values.username|default('') }}" minlength="3" maxlength="30" pattern="[a-zA-Z0-9.]+" required>
+                    <p class="field-hint">3–30 characters: letters, numbers and dots.</p>
+                </div>
+                <div class="field">
+                    <label for="user-email">Email</label>
+                    <input id="user-email" name="email" type="email" value="{{ values.email|default('') }}" maxlength="254" required>
+                </div>
+                <div class="field full">
+                    <label for="user-role">Role</label>
+                    <select id="user-role" name="role" required>
+                        <option value="jury" {{ values.role|default('jury') == 'jury' ? 'selected' : '' }}>Jury — review nominations</option>
+                        <option value="admin" {{ values.role|default('jury') == 'admin' ? 'selected' : '' }}>Admin — manage nominations and users</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="user-password">Initial password</label>
+                    <input id="user-password" name="password" type="password" autocomplete="new-password" required>
+                </div>
+                <div class="field">
+                    <label for="user-password-confirm">Confirm initial password</label>
+                    <input id="user-password-confirm" name="password_confirm" type="password" autocomplete="new-password" required>
+                </div>
+            </div>
+            <button class="button" type="submit">Create user</button>
+        </form>
+    </section>
+</div>
+{% endblock %}

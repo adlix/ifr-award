@@ -12,12 +12,18 @@ $routes->get('nominate/thank-you', 'Nomination::thankYou');
 
 $routes->group('', ['filter' => 'session'], static function (RouteCollection $routes): void {
     $routes->get('account', 'Account::index');
+    $routes->post('account/password', 'Account::changePassword');
     $routes->post('account/test-email', 'Account::sendTestEmail');
 });
 
 $routes->group('admin', ['filter' => 'permission:admin.access'], static function (RouteCollection $routes): void {
     $routes->get('/', 'Admin\\Dashboard::index');
     $routes->post('nomination-period', 'Admin\\Dashboard::updatePeriod');
+});
+
+$routes->group('admin', ['filter' => 'permission:users.manage-admins'], static function (RouteCollection $routes): void {
+    $routes->get('users', 'Admin\\Users::index');
+    $routes->post('users', 'Admin\\Users::create');
 });
 
 $routes->group('admin', ['filter' => 'permission:award.review'], static function (RouteCollection $routes): void {

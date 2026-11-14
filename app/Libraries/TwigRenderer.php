@@ -36,6 +36,7 @@ final class TwigRenderer
             'loggedIn'       => $user !== null,
             'currentUsername' => $user?->username,
             'isAdmin'        => $user?->can('admin.access') ?? false,
+            'canManageUsers' => $user?->can('users.manage-admins') ?? false,
             'isReviewer'     => $user?->can('award.review') ?? false,
         ];
 

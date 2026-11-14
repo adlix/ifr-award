@@ -101,6 +101,7 @@ class AuthGroups extends ShieldAuthGroups
             'beta.*',
         ],
         'admin' => [
+            'users.manage-admins',
             'admin.access',
             'award.review',
             'users.create',
